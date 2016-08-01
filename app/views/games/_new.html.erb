@@ -1,0 +1,30 @@
+<div class='row'>
+  <form action="<%= games_url %>" class="col s12" method="post">
+    <input name="authenticity_token" value="<%= form_authenticity_token %>" type="hidden">
+
+    <div class="modal-content">
+
+      <div class='row'>
+        <div class='input-field'>
+          <input name="game[name]" id="game_name" type="text">
+          <label for="game_name">Name</label>
+        </div>
+      </div>
+
+      <p>
+        <input name="game[private]" type="radio" id="public_game" value="false" checked/>
+        <label for="public_game">Public</label>
+      </p>
+
+      <p>
+        <input name="game[private]" type="radio" id="private_game" value='true' />
+        <label for="private_game">Red</label>
+      </p>
+    </div>
+
+    <div class='modal-footer'>
+      <input type='submit' value='create' class="btn" />
+    </div>
+
+  </form>
+</div>

@@ -1,0 +1,17 @@
+<div id='game-index'>
+  <div class='split'>
+    <h1>GAMES</h1>
+
+    <a class="waves-effect waves-light btn modal-trigger" href="#new-game">
+      new game
+    </a>
+
+    <div id="new-game" class="modal">
+      <%= render 'new' %>
+    </div>
+  </div>
+
+  <ul id='game-list'>
+    <%= render @games %>
+  </ul>
+</div>
