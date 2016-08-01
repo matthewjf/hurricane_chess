@@ -2,16 +2,18 @@
   max-width: 800px;
   width: 100%;
 
-  h1 {
+  h2 {
     margin: 1rem 0;
-    font-size: 24px;
+    font-size: 1.5rem;
+    color: color('grey', 'darken-1');
   }
 
   #game-list {
-
+    
     li {
-        opacity: 0;
-        animation: new-item-animation .3s ease forwards;
+      margin-bottom: 0;
+      opacity: 0;
+      animation: new-item-animation .3s ease forwards;
     }
     @keyframes new-item-animation {
       from {
@@ -23,7 +25,7 @@
           transform : translateY(0);
       }
     }
-    
+
     .game {
       background-color: $dark-2;
       cursor: pointer;
