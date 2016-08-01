@@ -4,14 +4,16 @@
     <title>HurricaneChess</title>
     <%= csrf_meta_tags %>
     <%= stylesheet_link_tag    'application', media: 'all' %>
-    <%= javascript_include_tag 'application' %>
     <%= action_cable_meta_tag %>
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
 
   <body>
+    <%= render 'layouts/header' %>
     <div id='root'>
       <%= yield %>
     </div>
   </body>
+  <%= javascript_include_tag 'application' %>
+  <link href="https://fonts.googleapis.com/css?family=Megrim|Open+Sans" rel="stylesheet">
 </html>
