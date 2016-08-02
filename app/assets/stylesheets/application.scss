@@ -17,6 +17,10 @@ html {
   font-size: 16px;
   display: flex;
   justify-content: center;
+  #root-react-component {
+    max-width: 800px;
+    width: 100%;
+  }
 }
 
 .split {
@@ -36,5 +40,8 @@ html {
 form {
   [type="radio"]:checked + label:after, [type="radio"].with-gap:checked + label:after {
     background-color: $primary-color;
+  }
+  .input-field label {
+    display: block;
   }
 }
