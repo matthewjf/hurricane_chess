@@ -1,24 +1,65 @@
 var NewGameForm = React.createClass({
   blankAttrs: {
     name: '',
-    public: true,
-    private: false
+    private: false,
+    password: ''
   },
 
   getInitialState: function() {
     return this.blankAttrs;
   },
 
+  handleNameChange: function(e) {
+    this.setState({ name: e.currentTarget.value });
+  },
+
+  handlePrivateChange: function(e) {
+    this.setState({ private: true });
+  },
+
+  handlePublicChange: function(e) {
+    this.setState({ private: false, password: '' });
+  },
+
+  handlePasswordChange: function(e) {
+    this.setState({ password: e.currentTarget.value });
+  },
+
+  setPassword: function() {
+    if (this.state.private) {
+      return (
+        <div className='input-field'>
+          <input name="game[password]"
+                 id="game_password"
+                 type="password"
+                 value={this.state.password}
+                 onChange={this.handlePasswordChange} />
+          <label htmlFor="game_password">Password</label>
+        </div>
+      );
+    } else {
+      return;
+    }
+  },
+
   render: function() {
     return (
       <div className='row'>
         <form action="/games" className="col s12" method="post">
-          <input name="authenticity_token" value={this.props.token} type="hidden" />
+
+          <input name="authenticity_token"
+                 value={this.props.token}
+                 type="hidden" />
+
           <div className="modal-content">
 
             <div className='row'>
               <div className='input-field'>
-                <input name="game[name]" id="game_name" type="text"/>
+                <input name="game[name]"
+                       id="game_name"
+                       type="text"
+                       value={this.state.name}
+                       onChange={this.handleNameChange} />
                 <label htmlFor="game_name">Name</label>
               </div>
             </div>
@@ -27,17 +68,24 @@ var NewGameForm = React.createClass({
               <input name="game[private]"
                      type="radio"
                      id="public_game"
-                     value="false" />
-                   <label htmlFor="public_game">Public</label>
+                     onChange={this.handlePublicChange}
+                     checked={!this.state.private}
+                     value='false' />
+              <label htmlFor="public_game">Public</label>
             </p>
 
             <p>
               <input name="game[private]"
                      type="radio"
                      id="private_game"
-                     value='true' />
-                   <label htmlFor="private_game">Private</label>
+                     onChange={this.handlePrivateChange}
+                     checked={this.state.private}
+                     value='true'
+                     disabled />
+              <label htmlFor="private_game">Private</label>
             </p>
+            {this.setPassword()}
+
           </div>
 
           <div className='modal-footer'>
