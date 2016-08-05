@@ -21,9 +21,15 @@ var GameIndex = React.createClass({
     this._setSubscription();
   },
 
+  componentWillUnmount: function() {
+
+  },
+
   processBroadcast: function(data) {
     if (data['type'] === 'new') {
       this.setState({games: [data['game']].concat(this.state.games)});
+    } else {
+      console.log('unknown data type received');
     }
   },
 
