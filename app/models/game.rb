@@ -2,11 +2,11 @@ class Game < ApplicationRecord
   enum state: [:pending, :active, :archived]
 
   has_many :user_games,
-    foreign_key :game_id
+    foreign_key: :game_id
 
   has_many :users,
     through: :user_games,
-    sourec: :user    
+    source: :user
 
   after_create_commit { GameIndexBroadcastJob.perform_later(new_data) }
 

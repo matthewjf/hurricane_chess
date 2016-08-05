@@ -10,10 +10,10 @@ html {
   font-family: 'Open Sans', sans-serif;
   background-color: $dark-1;
   color: white;
-  padding: 1rem;
 }
 
 #root {
+  padding: 1rem;
   font-size: 16px;
   display: flex;
   justify-content: center;
@@ -38,10 +38,21 @@ html {
 }
 
 form {
-  [type="radio"]:checked + label:after, [type="radio"].with-gap:checked + label:after {
-    background-color: $primary-color;
-  }
   .input-field label {
     display: block;
+  }
+}
+
+.btn-success {
+  background-color: $success-color;
+  &:hover {
+    background-color: lighten($success-color, 5%);
+  }
+}
+
+.btn-warning {
+  background-color: $error-color;
+  &:hover {
+    background-color: lighten($error-color, 5%);
   }
 }

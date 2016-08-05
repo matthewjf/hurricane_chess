@@ -10,10 +10,14 @@
   </head>
 
   <body>
-    <%= render 'layouts/header' %>
+    <nav>
+      <%= render 'layouts/header' %>
+    </nav>
+
     <div id='root'>
       <%= yield %>
     </div>
   </body>
   <%= javascript_include_tag 'application' %>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </html>
