@@ -7,6 +7,11 @@ class GamesController < ApplicationController
 
   def show
     @game = Game.find(params[:id])
+    if @game.users.count < 2
+      render :show
+    else
+      # give user message
+    end
   end
 
   def create
@@ -14,6 +19,7 @@ class GamesController < ApplicationController
     if @game.save
       redirect_to @game
     else
+      # handle error
     end
   end
 

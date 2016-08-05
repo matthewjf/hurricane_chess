@@ -5,7 +5,7 @@ class User < ApplicationRecord
   attr_reader :password
 
   has_many :user_games,
-    foreign_key :user_id
+    foreign_key: :user_id
 
   has_many :games,
     through: :user_games,

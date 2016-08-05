@@ -1,4 +1,5 @@
 class Game < ApplicationRecord
+  validates :name, presence: true
   enum state: [:pending, :active, :archived]
 
   has_many :user_games,
