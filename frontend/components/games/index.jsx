@@ -2,7 +2,8 @@ var React = require('react');
 
 var GameIndexSubscription = require('../../util/game_index_subscription'),
     GameIndexApi = require('../../util/game_index_api'),
-    GameIndexStore = require('../../stores/game_index_store');
+    GameIndexStore = require('../../stores/game_index_store'),
+    CurrentUserState = require("../../mixins/current_user_state");
 
 var GameIndexItem = require('./index_item'),
     NewGameForm = require('./new_game_form');

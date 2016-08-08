@@ -1,8 +1,8 @@
-var GameIndexStore = require('../stores/game_index_store');
+var GameIndexStore = require('../stores/game_index_store'),
+    GameIndexActions = require('../actions/game_index_actions');
 
 module.exports = {
   subscribe: function() {
-    var self = this;
     /* global App */
     App.games_index = App.cable.subscriptions.create("GamesIndexChannel", {
       connected: function() {
@@ -14,8 +14,9 @@ module.exports = {
       },
 
       received: function(data) {
-        console.log('received data');
-        debugger
+        console.log('received');
+        if (data['type'] === 'create')
+          GameIndexActions.receiveGame(data['game']);
       }
     });
   },

@@ -60,8 +60,7 @@ module.exports = React.createClass({
 
             <div className='row'>
               <div className='input-field'>
-                <input name="game[name]"
-                       id="game_name"
+                <input id="game_name"
                        type="text"
                        value={this.state.name}
                        onChange={this.handleNameChange} />
@@ -70,8 +69,7 @@ module.exports = React.createClass({
             </div>
 
             <p>
-              <input name="game[private]"
-                     type="radio"
+              <input type="radio"
                      id="public_game"
                      onChange={this.handlePublicChange}
                      checked={!this.state.private}
@@ -80,8 +78,7 @@ module.exports = React.createClass({
             </p>
 
             <p>
-              <input name="game[private]"
-                     type="radio"
+              <input type="radio"
                      id="private_game"
                      onChange={this.handlePrivateChange}
                      checked={this.state.private}
@@ -94,7 +91,9 @@ module.exports = React.createClass({
           </div>
 
           <div className='modal-footer'>
-            <input type='submit' value='create' className="btn" />
+            <input type='submit'
+                   value='create'
+                   className="waves-effect waves-light btn" />
           </div>
 
         </form>

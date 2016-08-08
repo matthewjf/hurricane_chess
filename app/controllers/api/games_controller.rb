@@ -1,4 +1,6 @@
 class Api::GamesController < ApplicationController
+  before_action :require_current_user, except: :index
+
   def index
     @games = Game.index
     @game = Game.new

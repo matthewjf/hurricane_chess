@@ -1,9 +1,15 @@
+/* global Materialize */
+
 var React = require('react'),
     BrowserHistory = require('react-router').browserHistory;
 
-/* global Materialize */
+var UserApi = require('../../util/user_api');
 
 module.exports = React.createClass({
+  getInitialState: function() {
+    return {currentUser: this.props.currentUser};
+  },
+
 	componentDidMount: function() {
     $(document).ready(function(){
       $('.modal-trigger').leanModal();
@@ -11,15 +17,63 @@ module.exports = React.createClass({
     });
 	},
 
+  componentWillReceiveProps: function(props) {
+    this.setState({currentUser: props.currentUser});
+  },
+
   logout: function(e){
+    e.preventDefault();
+    UserApi.logout(this.successLogout);
   },
 
 	successLogout: function() {
+    this.home();
+    Materialize.toast('Logged out', 2000, 'green-text');
 	},
 
 	home: function() {
     BrowserHistory.push('/');
 	},
+
+  desktopLinks: function(){
+  if (this.state.currentUser) {
+    return (
+      <ul className="right hide-on-med-and-down">
+        <li><a onClick={this.logout}>Log Out</a></li>
+      </ul>
+    );
+  }
+  return (
+    <ul className="right hide-on-med-and-down">
+      <li><a className="modal-trigger" href='#signup'>
+        Sign Up
+      </a></li>
+      <li><a className="modal-trigger" href='#login'>
+        Log In
+      </a></li>
+    </ul>
+  );
+},
+
+mobileLinks: function(){
+    if (this.state.currentUser) {
+			return (
+        <ul id="nav-mobile" className="side-nav">
+          <li><a onClick={this.logout}>Log Out</a></li>
+        </ul>
+      );
+		}
+    return (
+      <ul id="nav-mobile" className="side-nav">
+				<li><a className="modal-trigger" href='#signup'>
+					Sign Up
+				</a></li>
+        <li><a className="modal-trigger" href='#login'>
+					Log In
+				</a></li>
+      </ul>
+    );
+  },
 
   render: function() {
     return (
@@ -29,17 +83,12 @@ module.exports = React.createClass({
             Hurricane Chess
           </a>
 
-          <a href="#" data-activates="mobile-demo" className="button-collapse">
+          <a href="#" data-activates="nav-mobile" className="button-collapse">
             <i className="material-icons">menu</i>
           </a>
 
-          <ul id="nav-mobile" className="right hide-on-med-and-down">
-            <li><a href="#">?</a></li>
-          </ul>
-
-          <ul className="side-nav" id="mobile-demo">
-            <li><a href="#">?</a></li>
-          </ul>
+          {this.desktopLinks()}
+          {this.mobileLinks()}
         </div>
 
       </nav>

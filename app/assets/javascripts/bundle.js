@@ -53,16 +53,24 @@
 	    BrowserHistory = __webpack_require__(168).browserHistory;
 	
 	var Header = __webpack_require__(230),
-	    GameIndex = __webpack_require__(231);
+	    GameIndex = __webpack_require__(231),
+	    LoginForm = __webpack_require__(265),
+	    SignupForm = __webpack_require__(266);
+	
+	var CurrentUserState = __webpack_require__(260);
 	
 	var App = React.createClass({
 	  displayName: 'App',
+	
+	  mixins: [CurrentUserState],
 	
 	  render: function () {
 	    return React.createElement(
 	      'div',
 	      { id: 'app' },
-	      React.createElement(Header, null),
+	      React.createElement(Header, { currentUser: this.state.currentUser }),
+	      React.createElement(SignupForm, { currentUser: this.state.currentUser }),
+	      React.createElement(LoginForm, { currentUser: this.state.currentUser }),
 	      React.createElement(
 	        'main',
 	        null,
@@ -25723,13 +25731,19 @@
 /* 230 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/* global Materialize */
+	
 	var React = __webpack_require__(1),
 	    BrowserHistory = __webpack_require__(168).browserHistory;
 	
-	/* global Materialize */
+	var UserApi = __webpack_require__(264);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
+	
+	  getInitialState: function () {
+	    return { currentUser: this.props.currentUser };
+	  },
 	
 	  componentDidMount: function () {
 	    $(document).ready(function () {
@@ -25738,12 +25752,102 @@
 	    });
 	  },
 	
-	  logout: function (e) {},
+	  componentWillReceiveProps: function (props) {
+	    this.setState({ currentUser: props.currentUser });
+	  },
 	
-	  successLogout: function () {},
+	  logout: function (e) {
+	    e.preventDefault();
+	    UserApi.logout(this.successLogout);
+	  },
+	
+	  successLogout: function () {
+	    this.home();
+	    Materialize.toast('Logged out', 2000, 'green-text');
+	  },
 	
 	  home: function () {
 	    BrowserHistory.push('/');
+	  },
+	
+	  desktopLinks: function () {
+	    if (this.state.currentUser) {
+	      return React.createElement(
+	        'ul',
+	        { className: 'right hide-on-med-and-down' },
+	        React.createElement(
+	          'li',
+	          null,
+	          React.createElement(
+	            'a',
+	            { onClick: this.logout },
+	            'Log Out'
+	          )
+	        )
+	      );
+	    }
+	    return React.createElement(
+	      'ul',
+	      { className: 'right hide-on-med-and-down' },
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'a',
+	          { className: 'modal-trigger', href: '#signup' },
+	          'Sign Up'
+	        )
+	      ),
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'a',
+	          { className: 'modal-trigger', href: '#login' },
+	          'Log In'
+	        )
+	      )
+	    );
+	  },
+	
+	  mobileLinks: function () {
+	    if (this.state.currentUser) {
+	      return React.createElement(
+	        'ul',
+	        { id: 'nav-mobile', className: 'side-nav' },
+	        React.createElement(
+	          'li',
+	          null,
+	          React.createElement(
+	            'a',
+	            { onClick: this.logout },
+	            'Log Out'
+	          )
+	        )
+	      );
+	    }
+	    return React.createElement(
+	      'ul',
+	      { id: 'nav-mobile', className: 'side-nav' },
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'a',
+	          { className: 'modal-trigger', href: '#signup' },
+	          'Sign Up'
+	        )
+	      ),
+	      React.createElement(
+	        'li',
+	        null,
+	        React.createElement(
+	          'a',
+	          { className: 'modal-trigger', href: '#login' },
+	          'Log In'
+	        )
+	      )
+	    );
 	  },
 	
 	  render: function () {
@@ -25760,39 +25864,15 @@
 	        ),
 	        React.createElement(
 	          'a',
-	          { href: '#', 'data-activates': 'mobile-demo', className: 'button-collapse' },
+	          { href: '#', 'data-activates': 'nav-mobile', className: 'button-collapse' },
 	          React.createElement(
 	            'i',
 	            { className: 'material-icons' },
 	            'menu'
 	          )
 	        ),
-	        React.createElement(
-	          'ul',
-	          { id: 'nav-mobile', className: 'right hide-on-med-and-down' },
-	          React.createElement(
-	            'li',
-	            null,
-	            React.createElement(
-	              'a',
-	              { href: '#' },
-	              '?'
-	            )
-	          )
-	        ),
-	        React.createElement(
-	          'ul',
-	          { className: 'side-nav', id: 'mobile-demo' },
-	          React.createElement(
-	            'li',
-	            null,
-	            React.createElement(
-	              'a',
-	              { href: '#' },
-	              '?'
-	            )
-	          )
-	        )
+	        this.desktopLinks(),
+	        this.mobileLinks()
 	      )
 	    );
 	  }
@@ -25807,7 +25887,8 @@
 	
 	var GameIndexSubscription = __webpack_require__(233),
 	    GameIndexApi = __webpack_require__(257),
-	    GameIndexStore = __webpack_require__(234);
+	    GameIndexStore = __webpack_require__(234),
+	    CurrentUserState = __webpack_require__(260);
 	
 	var GameIndexItem = __webpack_require__(259),
 	    NewGameForm = __webpack_require__(232);
@@ -25955,8 +26036,7 @@
 	            React.createElement(
 	              'div',
 	              { className: 'input-field' },
-	              React.createElement('input', { name: 'game[name]',
-	                id: 'game_name',
+	              React.createElement('input', { id: 'game_name',
 	                type: 'text',
 	                value: this.state.name,
 	                onChange: this.handleNameChange }),
@@ -25970,8 +26050,7 @@
 	          React.createElement(
 	            'p',
 	            null,
-	            React.createElement('input', { name: 'game[private]',
-	              type: 'radio',
+	            React.createElement('input', { type: 'radio',
 	              id: 'public_game',
 	              onChange: this.handlePublicChange,
 	              checked: !this.state.private,
@@ -25985,8 +26064,7 @@
 	          React.createElement(
 	            'p',
 	            null,
-	            React.createElement('input', { name: 'game[private]',
-	              type: 'radio',
+	            React.createElement('input', { type: 'radio',
 	              id: 'private_game',
 	              onChange: this.handlePrivateChange,
 	              checked: this.state.private,
@@ -26003,7 +26081,9 @@
 	        React.createElement(
 	          'div',
 	          { className: 'modal-footer' },
-	          React.createElement('input', { type: 'submit', value: 'create', className: 'btn' })
+	          React.createElement('input', { type: 'submit',
+	            value: 'create',
+	            className: 'waves-effect waves-light btn' })
 	        )
 	      )
 	    );
@@ -26014,11 +26094,11 @@
 /* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var GameIndexStore = __webpack_require__(234);
+	var GameIndexStore = __webpack_require__(234),
+	    GameIndexActions = __webpack_require__(258);
 	
 	module.exports = {
 	  subscribe: function () {
-	    var self = this;
 	    /* global App */
 	    App.games_index = App.cable.subscriptions.create("GamesIndexChannel", {
 	      connected: function () {
@@ -26030,8 +26110,8 @@
 	      },
 	
 	      received: function (data) {
-	        console.log('received data');
-	        debugger;
+	        console.log('received');
+	        if (data['type'] === 'create') GameIndexActions.receiveGame(data['game']);
 	      }
 	    });
 	  },
@@ -26070,8 +26150,12 @@
 	var GameIndexStore = new Store(Dispatcher);
 	
 	GameIndexStore.all = function () {
-	  return Object.keys(_games).map(function (gameId) {
+	  var games = Object.keys(_games).map(function (gameId) {
 	    return _games[gameId];
+	  });
+	
+	  return games.sort(function (g1, g2) {
+	    return new Date(g2.updated_at) - new Date(g1.updated_at);
 	  });
 	};
 	
@@ -32950,6 +33034,402 @@
 	        )
 	      )
 	    );
+	  }
+	});
+
+/***/ },
+/* 260 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var UserStore = __webpack_require__(261);
+	var UserApi = __webpack_require__(264);
+	
+	module.exports = {
+	
+		getInitialState: function () {
+			return {
+				currentUser: UserStore.currentUser(),
+				userErrors: UserStore.errors()
+			};
+		},
+	
+		componentDidMount: function () {
+			this.userListener = UserStore.addListener(this.updateUser);
+			if (typeof UserStore.currentUser() === 'undefined') {
+				UserApi.fetchCurrentUser();
+			}
+		},
+	
+		componentWillUnmount: function () {
+			this.userListener.remove();
+		},
+	
+		updateUser: function () {
+			this.setState({
+				currentUser: UserStore.currentUser(),
+				userErrors: UserStore.errors()
+			});
+		}
+	};
+
+/***/ },
+/* 261 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var AppDispatcher = __webpack_require__(253);
+	var Store = __webpack_require__(235).Store;
+	var UserConstants = __webpack_require__(263);
+	
+	var UserStore = new Store(AppDispatcher);
+	
+	var _currentUser, _errors;
+	
+	UserStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case UserConstants.LOGIN:
+	      UserStore.login(payload.user);
+	      break;
+	    case UserConstants.LOGOUT:
+	      UserStore.logout();
+	      break;
+	    case UserConstants.ERROR:
+	      UserStore.setErrors(payload.errors);
+	      break;
+	  }
+	  UserStore.__emitChange();
+	};
+	
+	UserStore.login = function (user) {
+	  _currentUser = user;
+	  _errors = null;
+	};
+	
+	UserStore.logout = function () {
+	  _currentUser = null;
+	  _errors = null;
+	};
+	
+	UserStore.currentUser = function () {
+	  if (_currentUser) {
+	    return $.extend({}, _currentUser);
+	  }
+	};
+	
+	UserStore.setErrors = function (errors) {
+	  _errors = errors;
+	};
+	
+	UserStore.errors = function () {
+	  if (_errors) {
+	    return [].slice.call(_errors);
+	  }
+	};
+	
+	module.exports = UserStore;
+
+/***/ },
+/* 262 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var UserConstants = __webpack_require__(263),
+	    UserStore = __webpack_require__(261),
+	    AppDispatcher = __webpack_require__(253);
+	
+	module.exports = {
+	
+		receiveCurrentUser: function (data) {
+			AppDispatcher.dispatch({
+				actionType: UserConstants.LOGIN,
+				user: { username: data.username }
+			});
+		},
+	
+		handleError: function (error) {
+			AppDispatcher.dispatch({
+				actionType: UserConstants.ERROR,
+				errors: error
+			});
+		},
+	
+		removeCurrentUser: function () {
+			AppDispatcher.dispatch({
+				actionType: UserConstants.LOGOUT
+			});
+		},
+	
+		resetErrors: function (errors) {
+			AppDispatcher.dispatch({
+				actionType: UserConstants.ERROR,
+				errors: errors
+			});
+		}
+	};
+
+/***/ },
+/* 263 */
+/***/ function(module, exports) {
+
+	module.exports = {
+		LOGIN: "LOGIN",
+		ERROR: "ERROR",
+		LOGOUT: "LOGOUT"
+	};
+
+/***/ },
+/* 264 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var UserActions = __webpack_require__(262);
+	
+	module.exports = {
+		signup: function (user, success) {
+			$.ajax({
+				url: "/api/user",
+				type: "post",
+				data: { user: user },
+				success: function (data) {
+					UserActions.receiveCurrentUser(data);
+					if (success) {
+						success();
+					}
+				},
+				error: UserActions.handleError
+			});
+		},
+	
+		login: function (user, success) {
+			$.ajax({
+				url: "/api/session",
+				type: "post",
+				data: { user: user },
+				success: function (data) {
+					UserActions.receiveCurrentUser(data);
+					if (success) {
+						success();
+					}
+				},
+				error: UserActions.handleError
+			});
+		},
+	
+		logout: function (success) {
+			$.ajax({
+				url: '/api/session',
+				method: 'delete',
+				success: function (data) {
+					UserActions.removeCurrentUser();
+					if (success) {
+						success();
+					}
+				},
+				error: UserActions.handleError
+			});
+		},
+	
+		fetchCurrentUser: function (success) {
+			$.ajax({
+				url: '/api/session',
+				method: 'get',
+				success: function (data) {
+					UserActions.receiveCurrentUser(data);
+					if (success) {
+						success();
+					}
+				},
+				error: UserActions.handleError
+			});
+		}
+	};
+
+/***/ },
+/* 265 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var UserApi = __webpack_require__(264);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  getInitialState: function () {
+	    return { username: '', password: '', currentUser: this.props.currentUser };
+	  },
+	
+	  setUsername: function (e) {
+	    this.setState({ username: e.currentTarget.value });
+	  },
+	
+	  setPassword: function (e) {
+	    this.setState({ password: e.currentTarget.value });
+	  },
+	
+	  resetState: function () {
+	    this.setState({ username: '', password: '' });
+	  },
+	
+	  handleSubmit: function (e) {
+	    e.preventDefault();
+	    UserApi.login(this.state);
+	  },
+	
+	  render: function () {
+	    if (this.state.currentUser) {
+	      return null;
+	    } else {
+	      return React.createElement(
+	        'div',
+	        { id: 'login', className: 'modal' },
+	        React.createElement(
+	          'div',
+	          { className: 'row' },
+	          React.createElement(
+	            'form',
+	            { onSubmit: this.handleSubmit },
+	            React.createElement(
+	              'div',
+	              { className: 'modal-content' },
+	              React.createElement(
+	                'div',
+	                { className: 'row' },
+	                React.createElement(
+	                  'div',
+	                  { className: 'input-field' },
+	                  React.createElement('input', { id: 'login[username]',
+	                    type: 'text',
+	                    value: this.state.username,
+	                    onChange: this.setUsername }),
+	                  React.createElement(
+	                    'label',
+	                    { htmlFor: 'login[username]' },
+	                    'Username'
+	                  )
+	                )
+	              ),
+	              React.createElement(
+	                'div',
+	                { className: 'row' },
+	                React.createElement(
+	                  'div',
+	                  { className: 'input-field' },
+	                  React.createElement('input', { id: 'login[password]',
+	                    type: 'password',
+	                    value: this.state.password,
+	                    onChange: this.setPassword }),
+	                  React.createElement(
+	                    'label',
+	                    { htmlFor: 'login[password]' },
+	                    'Password'
+	                  )
+	                )
+	              )
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'modal-footer' },
+	              React.createElement('input', { type: 'submit',
+	                value: 'login',
+	                className: 'waves-effect waves-light btn' })
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }
+	});
+
+/***/ },
+/* 266 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var UserApi = __webpack_require__(264);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  getInitialState: function () {
+	    return { username: '', password: '', currentUser: this.props.currentUser };
+	  },
+	
+	  setUsername: function (e) {
+	    this.setState({ username: e.currentTarget.value });
+	  },
+	
+	  setPassword: function (e) {
+	    this.setState({ password: e.currentTarget.value });
+	  },
+	
+	  resetState: function () {
+	    this.setState({ username: '', password: '' });
+	  },
+	
+	  handleSubmit: function (e) {
+	    e.preventDefault();
+	    UserApi.signup(this.state);
+	  },
+	
+	  render: function () {
+	    if (this.state.currentUser) {
+	      return null;
+	    } else {
+	      return React.createElement(
+	        'div',
+	        { id: 'signup', className: 'modal' },
+	        React.createElement(
+	          'div',
+	          { className: 'row' },
+	          React.createElement(
+	            'form',
+	            { onSubmit: this.handleSubmit },
+	            React.createElement(
+	              'div',
+	              { className: 'modal-content' },
+	              React.createElement(
+	                'div',
+	                { className: 'row' },
+	                React.createElement(
+	                  'div',
+	                  { className: 'input-field' },
+	                  React.createElement('input', { id: 'signup[username]',
+	                    type: 'text',
+	                    value: this.state.username,
+	                    onChange: this.setUsername }),
+	                  React.createElement(
+	                    'label',
+	                    { htmlFor: 'signup[username]' },
+	                    'Username'
+	                  )
+	                )
+	              ),
+	              React.createElement(
+	                'div',
+	                { className: 'row' },
+	                React.createElement(
+	                  'div',
+	                  { className: 'input-field' },
+	                  React.createElement('input', { id: 'signup[password]',
+	                    type: 'password',
+	                    value: this.state.password,
+	                    onChange: this.setPassword }),
+	                  React.createElement(
+	                    'label',
+	                    { htmlFor: 'signup[password]' },
+	                    'Password'
+	                  )
+	                )
+	              )
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'modal-footer' },
+	              React.createElement('input', { type: 'submit',
+	                value: 'sign up',
+	                className: 'waves-effect waves-light btn' })
+	            )
+	          )
+	        )
+	      );
+	    }
 	  }
 	});
 

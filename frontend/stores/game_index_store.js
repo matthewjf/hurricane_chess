@@ -23,8 +23,12 @@ var removeGame = function(game) {
 var GameIndexStore = new Store(Dispatcher);
 
 GameIndexStore.all = function() {
-  return Object.keys(_games).map(function(gameId){
+  var games = Object.keys(_games).map(function(gameId){
     return _games[gameId];
+  });
+
+  return games.sort(function(g1, g2){
+    return new Date(g2.updated_at) - new Date(g1.updated_at);
   });
 };
 
