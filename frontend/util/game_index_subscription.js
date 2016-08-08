@@ -15,7 +15,7 @@ module.exports = {
 
       received: function(data) {
         console.log('received');
-        if (data['type'] === 'create')
+        if (data['action'] === 'create')
           GameIndexActions.receiveGame(data['game']);
       }
     });

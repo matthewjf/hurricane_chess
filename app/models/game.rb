@@ -28,6 +28,6 @@ class Game < ApplicationRecord
   end
 
   def data(action)
-    {type: action, game: self}
+    {action: action, game: self}
   end
 end

@@ -27,12 +27,11 @@ module.exports = React.createClass({
   },
 
 	successLogout: function() {
-    this.home();
     Materialize.toast('Logged out', 2000, 'green-text');
 	},
 
 	home: function() {
-    BrowserHistory.push('/');
+    BrowserHistory.push('');
 	},
 
   desktopLinks: function(){

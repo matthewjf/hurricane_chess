@@ -25762,12 +25762,11 @@
 	  },
 	
 	  successLogout: function () {
-	    this.home();
 	    Materialize.toast('Logged out', 2000, 'green-text');
 	  },
 	
 	  home: function () {
-	    BrowserHistory.push('/');
+	    BrowserHistory.push('');
 	  },
 	
 	  desktopLinks: function () {
@@ -26111,7 +26110,7 @@
 	
 	      received: function (data) {
 	        console.log('received');
-	        if (data['type'] === 'create') GameIndexActions.receiveGame(data['game']);
+	        if (data['action'] === 'create') GameIndexActions.receiveGame(data['game']);
 	      }
 	    });
 	  },
@@ -33018,7 +33017,7 @@
 	  render: function () {
 	    return React.createElement(
 	      'li',
-	      { className: 'row', onClick: this.handleClick },
+	      { className: 'row' },
 	      React.createElement(
 	        'a',
 	        { onClick: this.handleClick },

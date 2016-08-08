@@ -17,7 +17,7 @@ module.exports = React.createClass({
 
   render: function() {
     return(
-      <li className="row" onClick={this.handleClick} >
+      <li className="row">
         <a onClick={this.handleClick}>
           <div className="game card-panel hoverable waves-effect">
             <span data={this.state.game.id}>id {this.state.game.id}</span>
