@@ -15,6 +15,7 @@ module.exports = {
 
       received: function(data) {
         console.log('received data');
+        debugger
       }
     });
   },

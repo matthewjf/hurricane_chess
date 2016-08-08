@@ -10,7 +10,7 @@ class Game < ApplicationRecord
     source: :user
 
   scope :index, -> {
-    where.not(status: :archived).where(private: false).order(created_at: :desc)
+    where(status: :pending).where(private: false).order(created_at: :desc)
   }
 
   def white

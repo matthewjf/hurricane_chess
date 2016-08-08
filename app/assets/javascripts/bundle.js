@@ -25881,7 +25881,8 @@
 /* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var React = __webpack_require__(1);
+	var React = __webpack_require__(1),
+	    GameIndexApi = __webpack_require__(257);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -25914,6 +25915,7 @@
 	
 	  handleSubmit: function (e) {
 	    if (e) e.preventDefault();
+	    GameIndexApi.createGame(this.state, function () {});
 	  },
 	
 	  setPassword: function () {
@@ -26029,6 +26031,7 @@
 	
 	      received: function (data) {
 	        console.log('received data');
+	        debugger;
 	      }
 	    });
 	  },
@@ -32870,6 +32873,15 @@
 	      success: function (games) {
 	        GameIndexActions.receiveGames(games);
 	      }
+	    });
+	  },
+	
+	  createGame: function (data, success, error) {
+	    $.ajax({
+	      url: 'api/games',
+	      type: "POST",
+	      data: { game: data },
+	      success: function (game) {}
 	    });
 	  }
 	};

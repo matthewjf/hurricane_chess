@@ -1,4 +1,5 @@
-var React = require('react');
+var React = require('react'),
+    GameIndexApi = require('../../util/game_index_api');
 
 module.exports = React.createClass({
   blankAttrs: {
@@ -30,6 +31,7 @@ module.exports = React.createClass({
   handleSubmit: function(e) {
     if(e)
       e.preventDefault();
+    GameIndexApi.createGame(this.state, function(){});
   },
 
   setPassword: function() {
