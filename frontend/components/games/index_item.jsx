@@ -1,4 +1,7 @@
-var GameIndexItem = React.createClass({
+var React = require('react'),
+    BrowserHistory = require('react-router').browserHistory;
+
+module.exports = React.createClass({
   getInitialState: function() {
     return {game: this.props.game};
   },
@@ -7,10 +10,15 @@ var GameIndexItem = React.createClass({
     this.setState({game: newProps.game});
   },
 
+  handleClick: function(e) {
+    e.preventDefault();
+    console.log('clicked on game');
+  },
+
   render: function() {
     return(
       <li className="row" onClick={this.handleClick} >
-        <a href={'/games/' + this.state.game.id}>
+        <a onClick={this.handleClick}>
           <div className="game card-panel hoverable waves-effect">
             <span data={this.state.game.id}>id {this.state.game.id}</span>
           </div>

@@ -1,0 +1,4 @@
+module.exports = {
+  GAMES_RECEIVED: "GAMES_RECEIVED",
+  GAME_RECEIVED: 'GAME_RECEIVED'
+};

@@ -1,4 +1,6 @@
-var NewGameForm = React.createClass({
+var React = require('react');
+
+module.exports = React.createClass({
   blankAttrs: {
     name: '',
     private: false,
@@ -25,6 +27,11 @@ var NewGameForm = React.createClass({
     this.setState({ password: e.currentTarget.value });
   },
 
+  handleSubmit: function(e) {
+    if(e)
+      e.preventDefault();
+  },
+
   setPassword: function() {
     if (this.state.private) {
       return (
@@ -45,11 +52,7 @@ var NewGameForm = React.createClass({
   render: function() {
     return (
       <div className='row'>
-        <form action="/games" className="col s12" method="post">
-
-          <input name="authenticity_token"
-                 value={this.props.token}
-                 type="hidden" />
+        <form onSubmit={this.handleSubmit} >
 
           <div className="modal-content">
 

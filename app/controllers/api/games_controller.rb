@@ -1,14 +1,14 @@
-class GamesController < ApplicationController
+class Api::GamesController < ApplicationController
   def index
     @games = Game.index
     @game = Game.new
-    render :index
+    render json: @games
   end
 
   def show
     @game = Game.find(params[:id])
     if @game.users.count < 2
-      render :show
+      render json: @game
     else
       # give user message
     end
@@ -17,14 +17,13 @@ class GamesController < ApplicationController
   def create
     @game = Game.new(game_params)
     if @game.save
-      redirect_to @game
+      render json: @game
     else
       # handle error
     end
   end
 
   def game_params
-    # params.require(:game).permit(:name, :private)
-    params.require(:game).permit!
+    params.require(:game).permit(:name, :private)
   end
 end

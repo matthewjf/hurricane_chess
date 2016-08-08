@@ -12,17 +12,6 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require react
-//= require react_ujs
 //= require materialize-sprockets
 //= require cable
-//= require_tree ./channels
-//= require components
-
-
-$(document).ready(function(){
-  // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
-  $('.modal-trigger').leanModal();
-});
-
-$(".button-collapse").sideNav();
+//= require_tree .
