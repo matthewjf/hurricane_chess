@@ -12,6 +12,10 @@ module.exports = React.createClass({
     return this.blankAttrs;
   },
 
+  resetState: function() {
+    return this.blankAttrs;
+  },
+
   handleNameChange: function(e) {
     this.setState({ name: e.currentTarget.value });
   },
@@ -29,9 +33,13 @@ module.exports = React.createClass({
   },
 
   handleSubmit: function(e) {
-    if(e)
-      e.preventDefault();
-    GameIndexApi.createGame(this.state, function(){});
+    if(e) { e.preventDefault(); }
+    GameIndexApi.createGame(this.state, this.success);
+  },
+
+  success: function() {
+    this.resetState();
+    $('#new-game-modal').closeModal();
   },
 
   setPassword: function() {

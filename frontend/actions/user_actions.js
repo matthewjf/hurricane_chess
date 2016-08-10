@@ -7,7 +7,7 @@ module.exports = {
 	receiveCurrentUser: function(data){
 		AppDispatcher.dispatch({
 			actionType: UserConstants.LOGIN,
-			user: {username: data.username}
+			user: data
 		});
 	},
 

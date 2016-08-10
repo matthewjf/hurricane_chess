@@ -5,17 +5,13 @@ var React = require('react'),
 
 var UserApi = require('../../util/user_api');
 
+var LoginForm = require('./login_form'),
+    SignupForm = require('./signup_form');
+
 module.exports = React.createClass({
   getInitialState: function() {
     return {currentUser: this.props.currentUser};
   },
-
-	componentDidMount: function() {
-    $(document).ready(function(){
-      $('.modal-trigger').leanModal();
-    	$(".button-collapse").sideNav();
-    });
-	},
 
   componentWillReceiveProps: function(props) {
     this.setState({currentUser: props.currentUser});
@@ -23,55 +19,50 @@ module.exports = React.createClass({
 
   logout: function(e){
     e.preventDefault();
-    UserApi.logout(this.successLogout);
+    UserApi.logout(function(){
+      Materialize.toast('Logged out', 2000, 'error-text');
+    });
   },
-
-	successLogout: function() {
-    Materialize.toast('Logged out', 2000, 'green-text');
-	},
 
 	home: function() {
     BrowserHistory.push('');
 	},
 
-  desktopLinks: function(){
-  if (this.state.currentUser) {
-    return (
-      <ul className="right hide-on-med-and-down">
-        <li><a onClick={this.logout}>Log Out</a></li>
-      </ul>
-    );
-  }
-  return (
-    <ul className="right hide-on-med-and-down">
-      <li><a className="modal-trigger" href='#signup'>
-        Sign Up
-      </a></li>
-      <li><a className="modal-trigger" href='#login'>
-        Log In
-      </a></li>
-    </ul>
-  );
-},
+  openLogin: function() {
+		$('#login-modal').openModal();
+	},
 
-mobileLinks: function(){
+	openSignup: function() {
+		$('#signup-modal').openModal();
+	},
+
+  desktopLinks: function(){
+    return this.links("right hide-on-med-and-down");
+  },
+
+  mobileLinks: function(className, id){
+    return this.links('side-nav', 'nav-mobile');
+  },
+
+  links: function(className, id){
     if (this.state.currentUser) {
 			return (
-        <ul id="nav-mobile" className="side-nav">
-          <li><a onClick={this.logout}>Log Out</a></li>
+        <ul id={id} className={className}>
+          <li><a id='logout' onClick={this.logout}>Log Out</a></li>
         </ul>
       );
-		}
-    return (
-      <ul id="nav-mobile" className="side-nav">
-				<li><a className="modal-trigger" href='#signup'>
-					Sign Up
-				</a></li>
-        <li><a className="modal-trigger" href='#login'>
-					Log In
-				</a></li>
-      </ul>
-    );
+		} else {
+      return (
+        <ul id={id} className={className}>
+  				<li><a onClick={this.openSignup} className="modal-trigger">
+  					Sign Up
+  				</a></li>
+          <li><a onClick={this.openLogin} className="modal-trigger">
+  					Log In
+  				</a></li>
+        </ul>
+      );
+    }
   },
 
   render: function() {

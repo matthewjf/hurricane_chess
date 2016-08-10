@@ -1,16 +1,18 @@
+/* global Materialize */
+
 var React = require('react');
 var UserApi = require('../../util/user_api');
 
 module.exports = React.createClass({
-  getInitialState: function(){
-    return {username: '', password: '', currentUser: this.props.currentUser};
+  getInitialState: function() {
+    return {username: '', password: ''};
   },
 
-  setUsername: function(e){
+  setUsername: function(e) {
     this.setState({username: e.currentTarget.value});
   },
 
-  setPassword: function(e){
+  setPassword: function(e) {
     this.setState({password: e.currentTarget.value});
   },
 
@@ -18,17 +20,23 @@ module.exports = React.createClass({
     this.setState({username: '', password: ''});
   },
 
-  handleSubmit: function(e){
+  handleSubmit: function(e) {
     e.preventDefault();
-    UserApi.login(this.state);
+    UserApi.login(this.state, this.success);
   },
 
-  render: function(){
+  success: function(data) {
+    this.resetState();
+    $('#login-modal').closeModal();
+    Materialize.toast('Welcome back, ' + data.username + '!', 2000);
+  },
+
+  render: function() {
     if (this.state.currentUser) {
       return null;
     } else {
       return (
-        <div id="login" className="modal">
+        <div id="login-modal" className="modal">
           <div className='row'>
             <form onSubmit={this.handleSubmit} >
 

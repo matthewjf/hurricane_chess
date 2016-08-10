@@ -28,7 +28,7 @@ class Api::SessionsController < ApplicationController
   def show
     if current_user
       @user = current_user
-      render json: {id: @user.id, username: @user.username}
+      render json: @user
     else
       @errors = nil
       render json: @errors, status: 404

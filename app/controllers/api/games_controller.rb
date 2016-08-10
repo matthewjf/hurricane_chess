@@ -1,5 +1,5 @@
 class Api::GamesController < ApplicationController
-  before_action :require_current_user, except: :index
+  before_action :require_signed_in!, except: :index
 
   def index
     @games = Game.index

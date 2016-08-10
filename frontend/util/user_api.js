@@ -8,7 +8,7 @@ module.exports = {
 			data: {user: user},
 			success: (function(data) {
 				UserActions.receiveCurrentUser(data);
-				if (success) {success();}
+					if (success) { success(data); }
 			}),
 			error: UserActions.handleError
 		});
@@ -21,7 +21,7 @@ module.exports = {
 			data: {user: user},
 			success: (function(data) {
 				UserActions.receiveCurrentUser(data);
-				if (success) {success();}
+				if (success) { success(data); }
 			}),
 			error: UserActions.handleError
 		});
@@ -33,7 +33,7 @@ module.exports = {
 			method: 'delete',
 			success: (function(data) {
 				UserActions.removeCurrentUser();
-				if (success) {success();}
+				if (success) { success(data); }
 			}),
 			error: UserActions.handleError
 		});
@@ -45,7 +45,7 @@ module.exports = {
 			method: 'get',
 			success: (function(data) {
 				UserActions.receiveCurrentUser(data);
-				if (success) {success();}
+				if (success) { success(data); }
 			}),
 			error: UserActions.handleError
 		});

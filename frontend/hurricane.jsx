@@ -20,9 +20,9 @@ var App = React.createClass({
     return (
         <div id='app'>
           <Header currentUser={this.state.currentUser} />
-          <SignupForm currentUser={this.state.currentUser} />
-          <LoginForm currentUser={this.state.currentUser} />
-
+          <SignupForm />
+          <LoginForm />
+          
           <main>
             {this.props.children}
           </main>
@@ -42,4 +42,10 @@ var Rtr = (
 document.addEventListener("DOMContentLoaded", function () {
   var root = document.getElementById('app');
   ReactDOM.render(Rtr, root);
+});
+
+
+$(document).ready(function(){
+  $('.modal-trigger').leanModal();
+  $(".button-collapse").sideNav();
 });

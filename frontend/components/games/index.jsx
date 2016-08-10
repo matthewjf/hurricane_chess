@@ -28,6 +28,10 @@ module.exports = React.createClass({
     GameIndexSubscription.unsubscribe();
   },
 
+  openNewGameForm: function() {
+		$('#new-game-modal').openModal();
+  },
+
   gameList: function(games) {
     if (games) {
       return games.map(function(game) {
@@ -45,11 +49,11 @@ module.exports = React.createClass({
           <h2>GAMES</h2>
 
           <a className="waves-effect waves-light btn modal-trigger"
-              href="#new-game">
+             onClick={this.openNewGameForm}>
             new game
           </a>
 
-          <div id="new-game" className="modal">
+          <div id="new-game-modal" className="modal">
             <NewGameForm />
           </div>
         </div>
