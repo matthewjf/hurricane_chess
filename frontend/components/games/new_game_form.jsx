@@ -20,7 +20,7 @@ module.exports = React.createClass({
   },
 
   handleNameChange: function(e) {
-    this.setState({ name: e.currentTarget.value, error: null });
+    this.setState({ name: e.currentTarget.value, errors: null });
   },
 
   handlePrivateChange: function(e) {
@@ -74,10 +74,10 @@ module.exports = React.createClass({
     }
   },
 
-  setErrors: function(errors) {
+  renderErrors: function(errors) {
     if (errors) {
       return errors.map(function(error) {
-        return <span className='error-text'>{error}</span>;
+        return <span className='error-text' key={error} >{error}</span>;
       });
     } else {
       return null;
@@ -90,7 +90,7 @@ module.exports = React.createClass({
         <form onSubmit={this.handleSubmit} >
 
           <div className="modal-content">
-            {this.setErrors(this.state.errors)}
+            {this.renderErrors(this.state.errors)}
             <div className='row'>
               <div className='input-field'>
                 <input id="game_name"

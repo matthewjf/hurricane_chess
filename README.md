@@ -18,6 +18,32 @@
 - Would like to keep the game logic server side (inside the cable) but this may be too slow
 - Maintain game state in the cable to support spectating (later)
 
+## To Do
+### Game Connection
+- On request: must be able to join as player
+- Success:
+  - Open connection
+  - Start game if 2 players
+  - Broadcast to game index stream (remove)
+- Connection closed:
+  - update game
+  - remove game if empty
+
+### Game Model
+- Add validation for user association (1 white, 1 black)
+
+### Game Index
+- Display game name and player info
+
+### Game Play
+- Channel messages
+  - actions: [move, destroy, updated, game over, game start, player join, player leave]
+  - add unique ids for all pieces to track game state
+
+### Game State
+- Maintain game state during game play
+- Maybe need to do this in the cable but we'd end up duping data (1 cable per player)
+
 ## Contributing
 
 1. Fork it

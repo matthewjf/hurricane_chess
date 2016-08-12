@@ -33172,7 +33172,7 @@
 	  },
 	
 	  handleNameChange: function (e) {
-	    this.setState({ name: e.currentTarget.value, error: null });
+	    this.setState({ name: e.currentTarget.value, errors: null });
 	  },
 	
 	  handlePrivateChange: function (e) {
@@ -33232,12 +33232,12 @@
 	    }
 	  },
 	
-	  setErrors: function (errors) {
+	  renderErrors: function (errors) {
 	    if (errors) {
 	      return errors.map(function (error) {
 	        return React.createElement(
 	          'span',
-	          { className: 'error-text' },
+	          { className: 'error-text', key: error },
 	          error
 	        );
 	      });
@@ -33256,7 +33256,7 @@
 	        React.createElement(
 	          'div',
 	          { className: 'modal-content' },
-	          this.setErrors(this.state.errors),
+	          this.renderErrors(this.state.errors),
 	          React.createElement(
 	            'div',
 	            { className: 'row' },
