@@ -6,10 +6,15 @@ module.exports = {
     /* global App */
     App.games_index = App.cable.subscriptions.create("GamesIndexChannel", {
       connected: function() {
+        console.log("connected");
         GameIndexActions.handleError();
       },
 
       disconnected: function() {
+        GameIndexActions.handleError('lost connection');
+      },
+
+      rejected: function() {
         GameIndexActions.handleError('lost connection');
       },
 
