@@ -14,5 +14,20 @@ module.exports = {
         errorCB(error);
       }
     });
+  },
+
+  joinGame: function(data, successCB, errorCB) {
+    $.ajax({
+      url: 'api/games/' + data.id,
+      type: "POST",
+      data: {game: data},
+      success: function(game) {
+        successCB(game);
+        GameActions.gameJoined(game);
+      },
+      error: function(error) {
+        errorCB(error);
+      }
+    });
   }
 };

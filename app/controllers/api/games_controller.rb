@@ -7,20 +7,20 @@ class Api::GamesController < ApplicationController
     render json: @games
   end
 
-  def show
+  def join
     @game = Game.find(params[:id])
-    if @game.users.count < 2
+    @game.join(current_user)
+    if @game.save
       render json: @game
     else
-      @errors = ['not found']
+      @errors = @game.errors.full_messages
       render json: @errors, status: :not_found
     end
   end
 
   def create
     @game = Game.new(game_params)
-    @game.player = current_user
-    binding.pry
+    @game.join(current_user)
     if @game.save
       render json: @game
     else

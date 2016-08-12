@@ -7,5 +7,11 @@ module.exports = {
       actionType: GameConstants.GAME_CREATED,
       game: game
     });
+  },
+  gameJoined: function(game) {
+    Dispatcher.dispatch({
+      actionType: GameConstants.GAME_JOINED,
+      game: game
+    });
   }
 };

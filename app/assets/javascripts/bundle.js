@@ -33535,7 +33535,8 @@
 /***/ function(module, exports) {
 
 	module.exports = {
-	  GAME_CREATED: "GAME_CREATED"
+	  GAME_CREATED: "GAME_CREATED",
+	  GAME_JOINED: "GAME_JOINED"
 	};
 
 /***/ },
@@ -33558,6 +33559,21 @@
 	        errorCB(error);
 	      }
 	    });
+	  },
+	
+	  joinGame: function (data, successCB, errorCB) {
+	    $.ajax({
+	      url: 'api/games/' + data.id,
+	      type: "POST",
+	      data: { game: data },
+	      success: function (game) {
+	        successCB(game);
+	        GameActions.gameJoined(game);
+	      },
+	      error: function (error) {
+	        errorCB(error);
+	      }
+	    });
 	  }
 	};
 
@@ -33572,6 +33588,12 @@
 	  gameCreated: function (game) {
 	    Dispatcher.dispatch({
 	      actionType: GameConstants.GAME_CREATED,
+	      game: game
+	    });
+	  },
+	  gameJoined: function (game) {
+	    Dispatcher.dispatch({
+	      actionType: GameConstants.GAME_JOINED,
 	      game: game
 	    });
 	  }

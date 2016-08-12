@@ -38,7 +38,7 @@ class Game < ApplicationRecord
     self.user_games << user_game
   end
 
-  def player=(user)
+  def join(user)
     self.white ? self.black=(user) : self.white=(user)
   end
 
@@ -69,6 +69,10 @@ class Game < ApplicationRecord
 
     if players.count > 2
       errors.add(:players, '2 players already assigned')
+    end
+
+    if white && black && white.id == black.id
+      errors.add(:players, "players must be unqiue")
     end
   end
 end
