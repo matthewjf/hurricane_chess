@@ -7,17 +7,6 @@ class Api::GamesController < ApplicationController
     render json: @games
   end
 
-  def join
-    @game = Game.find(params[:id])
-    @game.join(current_user)
-    if @game.save
-      render json: @game
-    else
-      @errors = @game.errors.full_messages
-      render json: @errors, status: :not_found
-    end
-  end
-
   def create
     @game = Game.new(game_params)
     @game.join(current_user)

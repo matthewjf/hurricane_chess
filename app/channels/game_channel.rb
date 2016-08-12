@@ -2,7 +2,8 @@
 class GameChannel < ApplicationCable::Channel
   def subscribed
     @game = Game.find(params[:game_id])
-    reject unless current_user.can_access_game?(@game)
+    reject unless join(game)
+
     stream_for @game
   end
 
@@ -11,7 +12,13 @@ class GameChannel < ApplicationCable::Channel
   end
 
   protected
-  def can_access_game?(game)
-    
+  def join(game)
+    if @game.players.include?(current_user)
+      # user already joined game
+      true
+    else
+      @game.join(current_user)
+      @game.save
+    end
   end
 end
