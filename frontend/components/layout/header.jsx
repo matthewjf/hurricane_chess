@@ -19,6 +19,7 @@ module.exports = React.createClass({
 
   logout: function(e){
     e.preventDefault();
+    this.home();
     UserApi.logout(function(){
       Materialize.toast('Logged out', 2000, 'error-text');
     });
@@ -80,7 +81,6 @@ module.exports = React.createClass({
           {this.desktopLinks()}
           {this.mobileLinks()}
         </div>
-
       </nav>
     );
   }

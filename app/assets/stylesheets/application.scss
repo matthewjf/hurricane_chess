@@ -62,10 +62,18 @@ form {
   background-color: $dark-0;
 }
 
+.success-color {
+  color: $success-color;
+}
+
 .success-text {
   color: $success-color;
 }
 
 .error-text {
   color: $error-color;
+}
+
+.error-color {
+  background-color: $error-color;
 }

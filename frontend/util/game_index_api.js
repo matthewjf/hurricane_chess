@@ -4,20 +4,8 @@ module.exports = {
   fetchGames: function() {
     $.ajax({
       url: 'api/games',
-      success: function(games) {
-        GameIndexActions.receiveGames(games);
-      }
-    });
-  },
-
-  createGame: function(data, success, error) {
-    $.ajax({
-      url: 'api/games',
-      type: "POST",
-      data: {game: data},
-      success: function(game){
-        
-      }
+      success: GameIndexActions.receiveGames,
+      error: GameIndexActions.handleError
     });
   }
 };

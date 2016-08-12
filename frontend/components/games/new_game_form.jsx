@@ -1,11 +1,14 @@
 var React = require('react'),
-    GameIndexApi = require('../../util/game_index_api');
+    BrowserHistory = require('react-router').browserHistory,
+    GameApi = require('../../util/game_api'),
+    ErrorUtil = require('../../util/error_util');
 
 module.exports = React.createClass({
   blankAttrs: {
     name: '',
     private: false,
-    password: ''
+    password: '',
+    errors: null
   },
 
   getInitialState: function() {
@@ -17,7 +20,7 @@ module.exports = React.createClass({
   },
 
   handleNameChange: function(e) {
-    this.setState({ name: e.currentTarget.value });
+    this.setState({ name: e.currentTarget.value, error: null });
   },
 
   handlePrivateChange: function(e) {
@@ -34,12 +37,24 @@ module.exports = React.createClass({
 
   handleSubmit: function(e) {
     if(e) { e.preventDefault(); }
-    GameIndexApi.createGame(this.state, this.success);
+    GameApi.createGame(this.state, this.submitSuccess, this.submitError);
   },
 
-  success: function() {
-    this.resetState();
+  submitError: function(error) {
+    if (error.status === 401) {
+      // not logged in
+      $('#new-game-modal').closeModal();
+      ErrorUtil.loginRequired();
+    } else if (error.status === 422) {
+      this.setState({errors: error.responseJSON});
+    } else {
+      // unexpected error
+    }
+  },
+
+  submitSuccess: function(game) {
     $('#new-game-modal').closeModal();
+    BrowserHistory.push("game/" + game.id);
   },
 
   setPassword: function() {
@@ -51,11 +66,21 @@ module.exports = React.createClass({
                  type="password"
                  value={this.state.password}
                  onChange={this.handlePasswordChange} />
-          <label htmlFor="game_password">Password</label>
+          <label htmlFor="game_password" >Password</label>
         </div>
       );
     } else {
-      return;
+      return null;
+    }
+  },
+
+  setErrors: function(errors) {
+    if (errors) {
+      return errors.map(function(error) {
+        return <span className='error-text'>{error}</span>;
+      });
+    } else {
+      return null;
     }
   },
 
@@ -65,7 +90,7 @@ module.exports = React.createClass({
         <form onSubmit={this.handleSubmit} >
 
           <div className="modal-content">
-
+            {this.setErrors(this.state.errors)}
             <div className='row'>
               <div className='input-field'>
                 <input id="game_name"

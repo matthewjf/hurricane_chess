@@ -10,11 +10,11 @@ var GameIndexItem = require('./index_item'),
 
 module.exports = React.createClass({
   getInitialState: function() {
-    return {games: []};
+    return { games: [], error: null, openModal: false };
   },
 
   getGames: function() {
-    this.setState({ games: GameIndexStore.all() });
+    this.setState({games: GameIndexStore.all(), error: GameIndexStore.error()});
   },
 
   componentDidMount: function() {
@@ -38,13 +38,26 @@ module.exports = React.createClass({
         return <GameIndexItem game={game} key={game.id} />;
       });
     } else {
-      return <div/>;
+      return null;
+    }
+  },
+
+  renderError: function(error) {
+    if (error) {
+      return (
+        <div id='index-error' className="card-panel white-text error-color">
+          <span>Uh oh. Something bad happened. Try refreshing.</span>
+        </div>
+      );
+    } else {
+      return null;
     }
   },
 
   render: function() {
     return(
       <div id='game-index'>
+        { this.renderError(this.state.error) }
         <div className='split'>
           <h2>GAMES</h2>
 
@@ -59,7 +72,7 @@ module.exports = React.createClass({
         </div>
 
         <ul id='game-list'>
-          {this.gameList(this.state.games) }
+          { this.gameList(this.state.games) }
         </ul>
       </div>
     );

@@ -7,9 +7,10 @@ var Router = require('react-router').Router,
     BrowserHistory = require('react-router').browserHistory;
 
 var Header = require('./components/layout/header'),
-    GameIndex = require('./components/games/index'),
     LoginForm = require('./components/layout/login_form'),
-    SignupForm = require('./components/layout/signup_form');
+    SignupForm = require('./components/layout/signup_form'),
+    GameIndex = require('./components/games/index'),
+    Game = require('./components/games/game');
 
 var CurrentUserState = require("./mixins/current_user_state");
 
@@ -20,9 +21,9 @@ var App = React.createClass({
     return (
         <div id='app'>
           <Header currentUser={this.state.currentUser} />
-          <SignupForm />
-          <LoginForm />
-          
+            <SignupForm />
+            <LoginForm />
+
           <main>
             {this.props.children}
           </main>
@@ -35,6 +36,7 @@ var Rtr = (
   <Router history={BrowserHistory}>
     <Route path='/' component={App}>
       <IndexRoute component={GameIndex} />
+      <Route path='game/:gameId' component={Game} />
     </Route>
   </Router>
 );

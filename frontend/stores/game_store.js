@@ -3,7 +3,6 @@ var Store = require('flux/utils').Store,
     GameIndexConstants = require('../constants/game_index_constants');
 
 var _games = {};
-var _error = null;
 
 var resetGames = function(games) {
   _games = {};
@@ -11,7 +10,6 @@ var resetGames = function(games) {
   games.forEach(function(game) {
     _games[game.id] = game;
   });
-  clearError();
 };
 
 var setGame = function(game) {
@@ -20,14 +18,6 @@ var setGame = function(game) {
 
 var removeGame = function(game) {
   delete _games[game.id];
-};
-
-var setError = function(error) {
-  _error = error;
-};
-
-var clearError = function() {
-  _error = null;
 };
 
 var GameIndexStore = new Store(Dispatcher);
@@ -42,10 +32,6 @@ GameIndexStore.all = function() {
   });
 };
 
-GameIndexStore.error = function() {
-  return _error;
-};
-
 GameIndexStore.find = function(id) {
   return _games[id];
 };
@@ -57,9 +43,6 @@ GameIndexStore.__onDispatch = function (payload) {
       break;
     case GameIndexConstants.GAME_RECEIVED:
       setGame(payload.game);
-      break;
-    case GameIndexConstants.ERROR_RECEIVED:
-      setError(payload.error);
       break;
   }
   this.__emitChange();

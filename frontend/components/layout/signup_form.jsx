@@ -28,7 +28,7 @@ module.exports = React.createClass({
   success: function(data) {
     this.resetState();
     $('#signup-modal').closeModal();
-    Materialize.toast('Welcome, ' + data.username + '!', 2000);
+    Materialize.toast('Welcome, ' + data.username + '!', 2000, 'success-text');
   },
 
   render: function() {

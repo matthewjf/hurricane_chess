@@ -28,7 +28,11 @@ module.exports = React.createClass({
   success: function(data) {
     this.resetState();
     $('#login-modal').closeModal();
-    Materialize.toast('Welcome back, ' + data.username + '!', 2000);
+    Materialize.toast(
+      'Welcome back, ' + data.username + '!',
+      2000,
+      'success-text'
+    );
   },
 
   render: function() {

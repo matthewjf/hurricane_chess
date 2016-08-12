@@ -53,9 +53,10 @@
 	    BrowserHistory = __webpack_require__(168).browserHistory;
 	
 	var Header = __webpack_require__(229),
-	    GameIndex = __webpack_require__(255),
 	    LoginForm = __webpack_require__(264),
-	    SignupForm = __webpack_require__(265);
+	    SignupForm = __webpack_require__(265),
+	    GameIndex = __webpack_require__(255),
+	    Game = __webpack_require__(269);
 	
 	var CurrentUserState = __webpack_require__(261);
 	
@@ -86,7 +87,8 @@
 	  React.createElement(
 	    Route,
 	    { path: '/', component: App },
-	    React.createElement(IndexRoute, { component: GameIndex })
+	    React.createElement(IndexRoute, { component: GameIndex }),
+	    React.createElement(Route, { path: 'game/:gameId', component: Game })
 	  )
 	);
 	
@@ -25758,6 +25760,7 @@
 	
 	  logout: function (e) {
 	    e.preventDefault();
+	    this.home();
 	    UserApi.logout(function () {
 	      Materialize.toast('Logged out', 2000, 'error-text');
 	    });
@@ -25860,61 +25863,81 @@
 	var UserActions = __webpack_require__(231);
 	
 	module.exports = {
-		signup: function (user, success) {
+		signup: function (user, successCB, errorCB) {
 			$.ajax({
 				url: "/api/user",
 				type: "post",
 				data: { user: user },
 				success: function (data) {
 					UserActions.receiveCurrentUser(data);
-					if (success) {
-						success(data);
+					if (successCB) {
+						successCB(data);
 					}
 				},
-				error: UserActions.handleError
+				error: function (error) {
+					UserActions.handleError(error);
+					if (errorCB) {
+						errorCB(error);
+					}
+				}
 			});
 		},
 	
-		login: function (user, success) {
+		login: function (user, successCB, errorCB) {
 			$.ajax({
 				url: "/api/session",
 				type: "post",
 				data: { user: user },
 				success: function (data) {
 					UserActions.receiveCurrentUser(data);
-					if (success) {
-						success(data);
+					if (successCB) {
+						successCB(data);
 					}
 				},
-				error: UserActions.handleError
+				error: function (error) {
+					UserActions.handleError(error);
+					if (errorCB) {
+						errorCB(error);
+					}
+				}
 			});
 		},
 	
-		logout: function (success) {
+		logout: function (successCB, errorCB) {
 			$.ajax({
 				url: '/api/session',
 				method: 'delete',
 				success: function (data) {
 					UserActions.removeCurrentUser();
-					if (success) {
-						success(data);
+					if (successCB) {
+						successCB(data);
 					}
 				},
-				error: UserActions.handleError
+				error: function (error) {
+					UserActions.handleError(error);
+					if (errorCB) {
+						errorCB(error);
+					}
+				}
 			});
 		},
 	
-		fetchCurrentUser: function (success) {
+		fetchCurrentUser: function (successCB, errorCB) {
 			$.ajax({
 				url: '/api/session',
 				method: 'get',
 				success: function (data) {
 					UserActions.receiveCurrentUser(data);
-					if (success) {
-						success(data);
+					if (successCB) {
+						successCB(data);
 					}
 				},
-				error: UserActions.handleError
+				error: function (error) {
+					UserActions.handleError(error);
+					if (errorCB) {
+						errorCB(error);
+					}
+				}
 			});
 		}
 	};
@@ -32798,11 +32821,11 @@
 	  displayName: 'exports',
 	
 	  getInitialState: function () {
-	    return { games: [] };
+	    return { games: [], error: null, openModal: false };
 	  },
 	
 	  getGames: function () {
-	    this.setState({ games: GameIndexStore.all() });
+	    this.setState({ games: GameIndexStore.all(), error: GameIndexStore.error() });
 	  },
 	
 	  componentDidMount: function () {
@@ -32826,7 +32849,23 @@
 	        return React.createElement(GameIndexItem, { game: game, key: game.id });
 	      });
 	    } else {
-	      return React.createElement('div', null);
+	      return null;
+	    }
+	  },
+	
+	  renderError: function (error) {
+	    if (error) {
+	      return React.createElement(
+	        'div',
+	        { id: 'index-error', className: 'card-panel white-text error-color' },
+	        React.createElement(
+	          'span',
+	          null,
+	          'Uh oh. Something bad happened. Try refreshing.'
+	        )
+	      );
+	    } else {
+	      return null;
 	    }
 	  },
 	
@@ -32834,6 +32873,7 @@
 	    return React.createElement(
 	      'div',
 	      { id: 'game-index' },
+	      this.renderError(this.state.error),
 	      React.createElement(
 	        'div',
 	        { className: 'split' },
@@ -32875,11 +32915,11 @@
 	    /* global App */
 	    App.games_index = App.cable.subscriptions.create("GamesIndexChannel", {
 	      connected: function () {
-	        console.log('connected to games index');
+	        GameIndexActions.handleError();
 	      },
 	
 	      disconnected: function () {
-	        console.log('disconnected from games index');
+	        GameIndexActions.handleError('lost connection');
 	      },
 	
 	      received: function (data) {
@@ -32890,6 +32930,7 @@
 	  },
 	
 	  unsubscribe: function () {
+	    GameIndexActions.handleError('lost connection');
 	    App.games_index.unsubscribe();
 	  }
 	};
@@ -32903,6 +32944,7 @@
 	    GameIndexConstants = __webpack_require__(258);
 	
 	var _games = {};
+	var _error = null;
 	
 	var resetGames = function (games) {
 	  _games = {};
@@ -32910,6 +32952,7 @@
 	  games.forEach(function (game) {
 	    _games[game.id] = game;
 	  });
+	  clearError();
 	};
 	
 	var setGame = function (game) {
@@ -32918,6 +32961,14 @@
 	
 	var removeGame = function (game) {
 	  delete _games[game.id];
+	};
+	
+	var setError = function (error) {
+	  _error = error;
+	};
+	
+	var clearError = function () {
+	  _error = null;
 	};
 	
 	var GameIndexStore = new Store(Dispatcher);
@@ -32932,6 +32983,10 @@
 	  });
 	};
 	
+	GameIndexStore.error = function () {
+	  return _error;
+	};
+	
 	GameIndexStore.find = function (id) {
 	  return _games[id];
 	};
@@ -32943,6 +32998,9 @@
 	      break;
 	    case GameIndexConstants.GAME_RECEIVED:
 	      setGame(payload.game);
+	      break;
+	    case GameIndexConstants.ERROR_RECEIVED:
+	      setError(payload.error);
 	      break;
 	  }
 	  this.__emitChange();
@@ -32956,7 +33014,8 @@
 
 	module.exports = {
 	  GAMES_RECEIVED: "GAMES_RECEIVED",
-	  GAME_RECEIVED: 'GAME_RECEIVED'
+	  GAME_RECEIVED: 'GAME_RECEIVED',
+	  ERROR_RECEIVED: "ERROR_RECEIVED"
 	};
 
 /***/ },
@@ -32973,10 +33032,18 @@
 	      games: games
 	    });
 	  },
+	
 	  receiveGame: function (game) {
 	    Dispatcher.dispatch({
 	      actionType: GameIndexConstants.GAME_RECEIVED,
 	      game: game
+	    });
+	  },
+	
+	  handleError: function (error) {
+	    Dispatcher.dispatch({
+	      actionType: GameIndexConstants.ERROR_RECEIVED,
+	      error: error
 	    });
 	  }
 	};
@@ -32991,18 +33058,8 @@
 	  fetchGames: function () {
 	    $.ajax({
 	      url: 'api/games',
-	      success: function (games) {
-	        GameIndexActions.receiveGames(games);
-	      }
-	    });
-	  },
-	
-	  createGame: function (data, success, error) {
-	    $.ajax({
-	      url: 'api/games',
-	      type: "POST",
-	      data: { game: data },
-	      success: function (game) {}
+	      success: GameIndexActions.receiveGames,
+	      error: GameIndexActions.handleError
 	    });
 	  }
 	};
@@ -33092,7 +33149,9 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1),
-	    GameIndexApi = __webpack_require__(260);
+	    BrowserHistory = __webpack_require__(168).browserHistory,
+	    GameApi = __webpack_require__(267),
+	    ErrorUtil = __webpack_require__(270);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -33100,7 +33159,8 @@
 	  blankAttrs: {
 	    name: '',
 	    private: false,
-	    password: ''
+	    password: '',
+	    errors: null
 	  },
 	
 	  getInitialState: function () {
@@ -33112,7 +33172,7 @@
 	  },
 	
 	  handleNameChange: function (e) {
-	    this.setState({ name: e.currentTarget.value });
+	    this.setState({ name: e.currentTarget.value, error: null });
 	  },
 	
 	  handlePrivateChange: function (e) {
@@ -33131,12 +33191,24 @@
 	    if (e) {
 	      e.preventDefault();
 	    }
-	    GameIndexApi.createGame(this.state, this.success);
+	    GameApi.createGame(this.state, this.submitSuccess, this.submitError);
 	  },
 	
-	  success: function () {
-	    this.resetState();
+	  submitError: function (error) {
+	    if (error.status === 401) {
+	      // not logged in
+	      $('#new-game-modal').closeModal();
+	      ErrorUtil.loginRequired();
+	    } else if (error.status === 422) {
+	      this.setState({ errors: error.responseJSON });
+	    } else {
+	      // unexpected error
+	    }
+	  },
+	
+	  submitSuccess: function (game) {
 	    $('#new-game-modal').closeModal();
+	    BrowserHistory.push("game/" + game.id);
 	  },
 	
 	  setPassword: function () {
@@ -33156,7 +33228,21 @@
 	        )
 	      );
 	    } else {
-	      return;
+	      return null;
+	    }
+	  },
+	
+	  setErrors: function (errors) {
+	    if (errors) {
+	      return errors.map(function (error) {
+	        return React.createElement(
+	          'span',
+	          { className: 'error-text' },
+	          error
+	        );
+	      });
+	    } else {
+	      return null;
 	    }
 	  },
 	
@@ -33170,6 +33256,7 @@
 	        React.createElement(
 	          'div',
 	          { className: 'modal-content' },
+	          this.setErrors(this.state.errors),
 	          React.createElement(
 	            'div',
 	            { className: 'row' },
@@ -33266,7 +33353,7 @@
 	  success: function (data) {
 	    this.resetState();
 	    $('#login-modal').closeModal();
-	    Materialize.toast('Welcome back, ' + data.username + '!', 2000);
+	    Materialize.toast('Welcome back, ' + data.username + '!', 2000, 'success-text');
 	  },
 	
 	  render: function () {
@@ -33370,7 +33457,7 @@
 	  success: function (data) {
 	    this.resetState();
 	    $('#signup-modal').closeModal();
-	    Materialize.toast('Welcome, ' + data.username + '!', 2000);
+	    Materialize.toast('Welcome, ' + data.username + '!', 2000, 'success-text');
 	  },
 	
 	  render: function () {
@@ -33437,6 +33524,79 @@
 	    }
 	  }
 	});
+
+/***/ },
+/* 266 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  GAME_CREATED: "GAME_CREATED"
+	};
+
+/***/ },
+/* 267 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var GameActions = __webpack_require__(268);
+	
+	module.exports = {
+	  createGame: function (data, successCB, errorCB) {
+	    $.ajax({
+	      url: 'api/games',
+	      type: "POST",
+	      data: { game: data },
+	      success: function (game) {
+	        successCB(game);
+	        GameActions.gameCreated(game);
+	      },
+	      error: function (error) {
+	        errorCB(error);
+	      }
+	    });
+	  }
+	};
+
+/***/ },
+/* 268 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Dispatcher = __webpack_require__(234),
+	    GameConstants = __webpack_require__(266);
+	
+	module.exports = {
+	  gameCreated: function (game) {
+	    Dispatcher.dispatch({
+	      actionType: GameConstants.GAME_CREATED,
+	      game: game
+	    });
+	  }
+	};
+
+/***/ },
+/* 269 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  render: function () {
+	    return null;
+	  }
+	});
+
+/***/ },
+/* 270 */
+/***/ function(module, exports) {
+
+	/* global Materialize */
+	
+	module.exports = {
+	  loginRequired: function () {
+	    Materialize.toast('Login required!', 2000, 'error-text');
+	  }
+	};
 
 /***/ }
 /******/ ]);

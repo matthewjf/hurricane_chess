@@ -12,7 +12,8 @@ class Api::GamesController < ApplicationController
     if @game.users.count < 2
       render json: @game
     else
-      # give user message
+      @errors = ['not found']
+      render json: @errors, status: :not_found
     end
   end
 
@@ -21,7 +22,8 @@ class Api::GamesController < ApplicationController
     if @game.save
       render json: @game
     else
-      # handle error
+      @errors = @game.errors.full_messages
+      render json: @errors, status: :unprocessable_entity
     end
   end
 

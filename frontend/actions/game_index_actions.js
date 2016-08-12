@@ -8,10 +8,18 @@ module.exports = {
       games: games
     });
   },
+
   receiveGame: function(game) {
     Dispatcher.dispatch({
       actionType: GameIndexConstants.GAME_RECEIVED,
       game: game
+    });
+  },
+
+  handleError: function(error) {
+    Dispatcher.dispatch({
+      actionType: GameIndexConstants.ERROR_RECEIVED,
+      error: error
     });
   }
 };

@@ -10,7 +10,7 @@ class Api::SessionsController < ApplicationController
       render json: @user
     else
       @errors = ['invalid credentials']
-      render json: @errors, status: 401
+      render json: @errors, status: :unauthorized
     end
   end
 
@@ -20,8 +20,8 @@ class Api::SessionsController < ApplicationController
       logout
       render json: @user
     else
-      @errors = ['no one logged in']
-      render json: @errors, status: 404
+      @errors = ['not logged in']
+      render json: @errors, status: :not_found
     end
   end
 
@@ -31,7 +31,7 @@ class Api::SessionsController < ApplicationController
       render json: @user
     else
       @errors = nil
-      render json: @errors, status: 404
+      render json: @errors, status: :not_found
     end
   end
 end

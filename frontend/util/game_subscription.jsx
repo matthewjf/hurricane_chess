@@ -1,16 +1,15 @@
-var GameIndexStore = require('../stores/game_index_store'),
+var GameStore = require('../stores/game_store'),
     GameIndexActions = require('../actions/game_index_actions');
 
 module.exports = {
   subscribe: function() {
     /* global App */
-    App.games_index = App.cable.subscriptions.create("GamesIndexChannel", {
+    App.game = App.cable.subscriptions.create("GamesIndexChannel", {
       connected: function() {
-        GameIndexActions.handleError();
+        console.log('connected to games index');
       },
 
       disconnected: function() {
-        GameIndexActions.handleError('lost connection');
       },
 
       received: function(data) {
@@ -22,7 +21,6 @@ module.exports = {
   },
 
   unsubscribe: function() {
-    GameIndexActions.handleError('lost connection');
     App.games_index.unsubscribe();
   }
 };
