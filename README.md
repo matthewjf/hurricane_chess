@@ -44,6 +44,9 @@
 - Maintain game state during game play
 - Maybe need to do this in the cable but we'd end up duping data (1 cable per player)
 
+### Routing
+- Handle browser history
+
 ## Contributing
 
 1. Fork it
