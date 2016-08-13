@@ -15,9 +15,17 @@ class Game < ApplicationRecord
     pending.where(private: false).order(created_at: :desc)
   }
 
+
+  # state updates
   def should_be_removed?
     players.count == 0 && pending?
   end
+
+  def update_state!
+    destroy! if should_be_removed?
+    active! if pending? && white && black
+  end
+
 
   # player assignment
   def white

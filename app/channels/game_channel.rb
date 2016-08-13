@@ -4,14 +4,16 @@ class GameChannel < ApplicationCable::Channel
     @game = Game.find(params[:game_id])
     reject unless join_current_user
 
+    @game.update_state!
     stream_for @game
   end
 
   def unsubscribed
     if @game.pending?
       @game.remove_player(current_user)
-      @game.destroy if @game.should_be_removed?
     end
+
+    @game.update_state!
   end
 
   protected

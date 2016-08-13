@@ -25,7 +25,7 @@ module.exports = {
           GameActions.handleError('lost connection');
         },
 
-        rejected: function(msg) {
+        rejected: function() {
           console.log('rejected from game');
           BrowserHistory.push("/");
           rejected();
