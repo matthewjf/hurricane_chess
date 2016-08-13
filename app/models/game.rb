@@ -23,7 +23,13 @@ class Game < ApplicationRecord
 
   def update_state!
     destroy! if should_be_removed?
-    active! if pending? && white && black
+
+    if pending? && white && black
+      # this don't work right, some async shit
+      sleep 10
+      reload
+      active! if pending? && white && black
+    end
   end
 
 
@@ -53,6 +59,7 @@ class Game < ApplicationRecord
   end
 
   def join(user)
+    return true if players.include?(user)
     self.white ? self.black=(user) : self.white=(user)
   end
 

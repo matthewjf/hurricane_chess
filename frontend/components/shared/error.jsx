@@ -13,7 +13,7 @@ module.exports = React.createClass({
     if (this.state.error) {
       return (
         <div id='index-error' className="card-panel white-text error-color">
-          <span>Uh oh. Something bad happened. Try refreshing.</span>
+          <span>Uh oh. Bad things happened.</span>
         </div>
       );
     } else {

@@ -7,5 +7,12 @@ module.exports = {
       actionType: GameConstants.GAME_JOINED,
       gameId: gameId
     });
+  },
+
+  handleError: function(error) {
+    Dispatcher.dispatch({
+      actionType: GameConstants.ERROR_RECEIVED,
+      error: error
+    });
   }
 };

@@ -2,7 +2,8 @@ var React = require('react'),
     Error = require("../shared/error"),
     ErrorUtil = require('../../util/error_util'),
     CurrentUserState = require('../../mixins/current_user_state'),
-    GameSubscription = require('../../util/game_subscription');
+    GameSubscription = require('../../util/game_subscription'),
+    GameStore = require("../../stores/game_store");
 
 module.exports = React.createClass({
   mixins: [CurrentUserState],
@@ -15,10 +16,16 @@ module.exports = React.createClass({
   },
 
   componentDidMount: function() {
+    this.gameListener = GameStore.addListener(this.getGame);
     GameSubscription.subscribe(this.state.id, this.rejected);
   },
 
+  getGame: function() {
+
+  },
+
   componentWillUnmount: function() {
+    this.gameListener.remove();
     GameSubscription.unsubscribe();
   },
 

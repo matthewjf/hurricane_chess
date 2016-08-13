@@ -33535,7 +33535,8 @@
 /***/ function(module, exports) {
 
 	module.exports = {
-	  GAME_JOINED: "GAME_JOINED"
+	  GAME_JOINED: "GAME_JOINED",
+	  ERROR_RECEIVED: "ERROR_RECEIVED"
 	};
 
 /***/ },
@@ -33573,6 +33574,13 @@
 	      actionType: GameConstants.GAME_JOINED,
 	      gameId: gameId
 	    });
+	  },
+	
+	  handleError: function (error) {
+	    Dispatcher.dispatch({
+	      actionType: GameConstants.ERROR_RECEIVED,
+	      error: error
+	    });
 	  }
 	};
 
@@ -33584,7 +33592,8 @@
 	    Error = __webpack_require__(273),
 	    ErrorUtil = __webpack_require__(270),
 	    CurrentUserState = __webpack_require__(261),
-	    GameSubscription = __webpack_require__(271);
+	    GameSubscription = __webpack_require__(271),
+	    GameStore = __webpack_require__(272);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -33599,10 +33608,14 @@
 	  },
 	
 	  componentDidMount: function () {
+	    this.gameListener = GameStore.addListener(this.getGame);
 	    GameSubscription.subscribe(this.state.id, this.rejected);
 	  },
 	
+	  getGame: function () {},
+	
 	  componentWillUnmount: function () {
+	    this.gameListener.remove();
 	    GameSubscription.unsubscribe();
 	  },
 	
@@ -33685,6 +33698,7 @@
 	    GameConstants = __webpack_require__(258);
 	
 	var _gameId = {};
+	var _error = null;
 	
 	var setGameId = function (gameId) {
 	  _gameId = gameId;
@@ -33692,6 +33706,14 @@
 	
 	var removeGame = function () {
 	  _gameId = {};
+	};
+	
+	var setError = function (error) {
+	  _error = error;
+	};
+	
+	var clearError = function (error) {
+	  _error = null;
 	};
 	
 	var GameStore = new Store(Dispatcher);
@@ -33703,6 +33725,9 @@
 	GameStore.__onDispatch = function (payload) {
 	  switch (payload.actionType) {
 	    case GameConstants.GAME_JOINED:
+	      setGameId(payload.gameId);
+	      break;
+	    case GameConstants.ERROR_RECEIVED:
 	      setGameId(payload.gameId);
 	      break;
 	  }
@@ -33736,7 +33761,7 @@
 	        React.createElement(
 	          'span',
 	          null,
-	          'Uh oh. Something bad happened. Try refreshing.'
+	          'Uh oh. Bad things happened.'
 	        )
 	      );
 	    } else {
