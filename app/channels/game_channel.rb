@@ -16,6 +16,7 @@ class GameChannel < ApplicationCable::Channel
 
   protected
   def join_current_user
+    return false unless current_user
     if @game.players.include?(current_user)
       # user already joined game
       true
@@ -24,4 +25,5 @@ class GameChannel < ApplicationCable::Channel
       @game.save
     end
   end
+
 end

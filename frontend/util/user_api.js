@@ -1,4 +1,5 @@
 var UserActions = require('../actions/user_actions');
+var Connection = require('./connection');
 
 module.exports = {
 	signup: function(user, successCB, errorCB){
@@ -8,6 +9,7 @@ module.exports = {
 			data: {user: user},
 			success: (function(data) {
 				UserActions.receiveCurrentUser(data);
+				Connection.reset();
 				if (successCB) { successCB(data); }
 			}),
 			error: (function(error) {
@@ -24,6 +26,7 @@ module.exports = {
 			data: {user: user},
 			success: (function(data) {
 				UserActions.receiveCurrentUser(data);
+				Connection.reset();
 				if (successCB) { successCB(data); }
 			}),
 			error: (function(error) {
@@ -39,6 +42,7 @@ module.exports = {
 			method: 'delete',
 			success: (function(data) {
 				UserActions.removeCurrentUser();
+				Connection.reset();
 				if (successCB) { successCB(data); }
 			}),
 			error: (function(error) {
@@ -54,6 +58,7 @@ module.exports = {
 			method: 'get',
 			success: (function(data) {
 				UserActions.receiveCurrentUser(data);
+				Connection.reset();
 				if (successCB) { successCB(data); }
 			}),
 			error: (function(error) {

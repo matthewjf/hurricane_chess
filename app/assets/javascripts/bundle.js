@@ -25861,6 +25861,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var UserActions = __webpack_require__(231);
+	var Connection = __webpack_require__(274);
 	
 	module.exports = {
 		signup: function (user, successCB, errorCB) {
@@ -25870,6 +25871,7 @@
 				data: { user: user },
 				success: function (data) {
 					UserActions.receiveCurrentUser(data);
+					Connection.reset();
 					if (successCB) {
 						successCB(data);
 					}
@@ -25890,6 +25892,7 @@
 				data: { user: user },
 				success: function (data) {
 					UserActions.receiveCurrentUser(data);
+					Connection.reset();
 					if (successCB) {
 						successCB(data);
 					}
@@ -25909,6 +25912,7 @@
 				method: 'delete',
 				success: function (data) {
 					UserActions.removeCurrentUser();
+					Connection.reset();
 					if (successCB) {
 						successCB(data);
 					}
@@ -25928,6 +25932,7 @@
 				method: 'get',
 				success: function (data) {
 					UserActions.receiveCurrentUser(data);
+					Connection.reset();
 					if (successCB) {
 						successCB(data);
 					}
@@ -33577,21 +33582,32 @@
 
 	var React = __webpack_require__(1),
 	    Error = __webpack_require__(273),
+	    ErrorUtil = __webpack_require__(270),
+	    CurrentUserState = __webpack_require__(261),
 	    GameSubscription = __webpack_require__(271);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
 	
+	  mixins: [CurrentUserState],
+	
 	  getInitialState: function () {
-	    return { id: this.props.params.gameId, error: null };
+	    return {
+	      id: this.props.params.gameId,
+	      error: null
+	    };
 	  },
 	
 	  componentDidMount: function () {
-	    GameSubscription.subscribe(this.state.id);
+	    GameSubscription.subscribe(this.state.id, this.rejected);
 	  },
 	
 	  componentWillUnmount: function () {
 	    GameSubscription.unsubscribe();
+	  },
+	
+	  rejected: function () {
+	    if (this.state.currentUser) ErrorUtil.gameRejected();else ErrorUtil.loginRequired();
 	  },
 	
 	  render: function () {
@@ -33609,7 +33625,7 @@
 	  loginRequired: function () {
 	    Materialize.toast('Login required!', 2000, 'error-text');
 	  },
-	  gameRejected: function () {
+	  gameRejected: function (currentUser) {
 	    Materialize.toast('Unable to join game', 2000, 'error-text');
 	  }
 	};
@@ -33625,8 +33641,11 @@
 	    GameActions = __webpack_require__(268);
 	
 	module.exports = {
-	  subscribe: function (gameId) {
+	  subscribe: function (gameId, rejectCB) {
 	    /* global App */
+	
+	    var rejected = rejectCB;
+	
 	    App.game = App.cable.subscriptions.create({
 	      channel: "GameChannel",
 	      game_id: gameId
@@ -33643,7 +33662,7 @@
 	      rejected: function (msg) {
 	        console.log('rejected from game');
 	        BrowserHistory.push("/");
-	        ErrorUtil.gameRejected();
+	        rejected();
 	      },
 	
 	      received: function (data) {
@@ -33725,6 +33744,18 @@
 	    }
 	  }
 	});
+
+/***/ },
+/* 274 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  reset: function () {
+	    /* global App */
+	    window.App.cable.disconnect();
+	    window.App.cable.connect();
+	  }
+	};
 
 /***/ }
 /******/ ]);

@@ -5,8 +5,11 @@ var GameStore = require('../stores/game_store'),
     GameActions = require('../actions/game_actions');
 
 module.exports = {
-  subscribe: function(gameId) {
+  subscribe: function(gameId, rejectCB) {
     /* global App */
+
+    var rejected = rejectCB;
+
     App.game = App.cable.subscriptions.create(
       {
         channel: "GameChannel",
@@ -25,7 +28,7 @@ module.exports = {
         rejected: function(msg) {
           console.log('rejected from game');
           BrowserHistory.push("/");
-          ErrorUtil.gameRejected();
+          rejected();
         },
 
         received: function(data) {

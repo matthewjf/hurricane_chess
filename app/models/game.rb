@@ -49,7 +49,7 @@ class Game < ApplicationRecord
   end
 
   def remove_player(user)
-    user_games.where(user_id: user.id).destroy_all
+    user_games.where(user_id: user.id).destroy_all if user
   end
 
   # broadcasting
