@@ -1,4 +1,5 @@
-var ErrorUtil = require('../util/error_util');
+var ErrorUtil = require('../util/error_util'),
+    BrowserHistory = require('react-router').browserHistory;
 
 var GameStore = require('../stores/game_store'),
     GameActions = require('../actions/game_actions');
@@ -14,14 +15,16 @@ module.exports = {
       {
         connected: function() {
           console.log('connected to game');
+          GameActions.gameJoined(gameId);
         },
 
         disconnected: function() {
-          console.log('disconnected from game');
+          GameActions.handleError('lost connection');
         },
 
         rejected: function(msg) {
           console.log('rejected from game');
+          BrowserHistory.push("/");
           ErrorUtil.gameRejected();
         },
 

@@ -54,7 +54,7 @@ module.exports = React.createClass({
 
   submitSuccess: function(game) {
     $('#new-game-modal').closeModal();
-    BrowserHistory.push("game/" + game.id);
+    BrowserHistory.push("games/" + game.id);
   },
 
   setPassword: function() {

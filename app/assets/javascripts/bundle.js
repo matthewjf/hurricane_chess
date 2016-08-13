@@ -88,7 +88,7 @@
 	    Route,
 	    { path: '/', component: App },
 	    React.createElement(IndexRoute, { component: GameIndex }),
-	    React.createElement(Route, { path: 'game/:gameId', component: Game })
+	    React.createElement(Route, { path: 'games/:gameId', component: Game })
 	  )
 	);
 	
@@ -32812,7 +32812,8 @@
 	var GameIndexSubscription = __webpack_require__(256),
 	    GameIndexApi = __webpack_require__(260),
 	    GameIndexStore = __webpack_require__(257),
-	    CurrentUserState = __webpack_require__(261);
+	    CurrentUserState = __webpack_require__(261),
+	    Error = __webpack_require__(273);
 	
 	var GameIndexItem = __webpack_require__(262),
 	    NewGameForm = __webpack_require__(263);
@@ -32853,27 +32854,11 @@
 	    }
 	  },
 	
-	  renderError: function (error) {
-	    if (error) {
-	      return React.createElement(
-	        'div',
-	        { id: 'index-error', className: 'card-panel white-text error-color' },
-	        React.createElement(
-	          'span',
-	          null,
-	          'Uh oh. Something bad happened. Try refreshing.'
-	        )
-	      );
-	    } else {
-	      return null;
-	    }
-	  },
-	
 	  render: function () {
 	    return React.createElement(
 	      'div',
 	      { id: 'game-index' },
-	      this.renderError(this.state.error),
+	      React.createElement(Error, { error: this.state.error }),
 	      React.createElement(
 	        'div',
 	        { className: 'split' },
@@ -32928,7 +32913,6 @@
 	      },
 	
 	      received: function (data) {
-	        console.log('received', data);
 	        if (data['action'] === 'create' || data['action'] === 'update') GameIndexActions.receiveGame(data['game']);else if (data['action'] === 'destroy') GameIndexActions.removeGame(data['game']);
 	      }
 	    });
@@ -33135,7 +33119,7 @@
 	
 	  handleClick: function (e) {
 	    e.preventDefault();
-	    console.log('clicked on game');
+	    BrowserHistory.push('games/' + this.state.game.id);
 	  },
 	
 	  render: function () {
@@ -33224,7 +33208,7 @@
 	
 	  submitSuccess: function (game) {
 	    $('#new-game-modal').closeModal();
-	    BrowserHistory.push("game/" + game.id);
+	    BrowserHistory.push("games/" + game.id);
 	  },
 	
 	  setPassword: function () {
@@ -33546,7 +33530,6 @@
 /***/ function(module, exports) {
 
 	module.exports = {
-	  GAME_CREATED: "GAME_CREATED",
 	  GAME_JOINED: "GAME_JOINED"
 	};
 
@@ -33564,7 +33547,6 @@
 	      data: { game: data },
 	      success: function (game) {
 	        successCB(game);
-	        GameActions.gameCreated(game);
 	      },
 	      error: function (error) {
 	        errorCB(error);
@@ -33581,16 +33563,10 @@
 	    GameConstants = __webpack_require__(266);
 	
 	module.exports = {
-	  gameCreated: function (game) {
-	    Dispatcher.dispatch({
-	      actionType: GameConstants.GAME_CREATED,
-	      game: game
-	    });
-	  },
-	  gameJoined: function (game) {
+	  gameJoined: function (gameId) {
 	    Dispatcher.dispatch({
 	      actionType: GameConstants.GAME_JOINED,
-	      game: game
+	      gameId: gameId
 	    });
 	  }
 	};
@@ -33600,13 +33576,14 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1),
+	    Error = __webpack_require__(273),
 	    GameSubscription = __webpack_require__(271);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
 	
 	  getInitialState: function () {
-	    return { id: this.props.params.gameId };
+	    return { id: this.props.params.gameId, error: null };
 	  },
 	
 	  componentDidMount: function () {
@@ -33618,7 +33595,7 @@
 	  },
 	
 	  render: function () {
-	    return null;
+	    return React.createElement(Error, { error: this.state.error });
 	  }
 	});
 
@@ -33641,7 +33618,8 @@
 /* 271 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ErrorUtil = __webpack_require__(270);
+	var ErrorUtil = __webpack_require__(270),
+	    BrowserHistory = __webpack_require__(168).browserHistory;
 	
 	var GameStore = __webpack_require__(272),
 	    GameActions = __webpack_require__(268);
@@ -33655,14 +33633,16 @@
 	    }, {
 	      connected: function () {
 	        console.log('connected to game');
+	        GameActions.gameJoined(gameId);
 	      },
 	
 	      disconnected: function () {
-	        console.log('disconnected from game');
+	        GameActions.handleError('lost connection');
 	      },
 	
 	      rejected: function (msg) {
 	        console.log('rejected from game');
+	        BrowserHistory.push("/");
 	        ErrorUtil.gameRejected();
 	      },
 	
@@ -33683,55 +33663,68 @@
 
 	var Store = __webpack_require__(238).Store,
 	    Dispatcher = __webpack_require__(234),
-	    GameIndexConstants = __webpack_require__(258);
+	    GameConstants = __webpack_require__(258);
 	
-	var _games = {};
+	var _gameId = {};
 	
-	var resetGames = function (games) {
-	  _games = {};
-	
-	  games.forEach(function (game) {
-	    _games[game.id] = game;
-	  });
+	var setGameId = function (gameId) {
+	  _gameId = gameId;
 	};
 	
-	var setGame = function (game) {
-	  _games[game.id] = game;
+	var removeGame = function () {
+	  _gameId = {};
 	};
 	
-	var removeGame = function (game) {
-	  delete _games[game.id];
+	var GameStore = new Store(Dispatcher);
+	
+	GameStore.gameId = function () {
+	  return _gameId;
 	};
 	
-	var GameIndexStore = new Store(Dispatcher);
-	
-	GameIndexStore.all = function () {
-	  var games = Object.keys(_games).map(function (gameId) {
-	    return _games[gameId];
-	  });
-	
-	  return games.sort(function (g1, g2) {
-	    return new Date(g2.updated_at) - new Date(g1.updated_at);
-	  });
-	};
-	
-	GameIndexStore.find = function (id) {
-	  return _games[id];
-	};
-	
-	GameIndexStore.__onDispatch = function (payload) {
+	GameStore.__onDispatch = function (payload) {
 	  switch (payload.actionType) {
-	    case GameIndexConstants.GAMES_RECEIVED:
-	      resetGames(payload.games);
-	      break;
-	    case GameIndexConstants.GAME_RECEIVED:
-	      setGame(payload.game);
+	    case GameConstants.GAME_JOINED:
+	      setGameId(payload.gameId);
 	      break;
 	  }
 	  this.__emitChange();
 	};
 	
-	module.exports = GameIndexStore;
+	module.exports = GameStore;
+
+/***/ },
+/* 273 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  getInitialState: function () {
+	    return { error: this.props.error };
+	  },
+	
+	  componentWillReceiveProps: function (props) {
+	    this.setState({ error: props.error });
+	  },
+	
+	  render: function () {
+	    if (this.state.error) {
+	      return React.createElement(
+	        'div',
+	        { id: 'index-error', className: 'card-panel white-text error-color' },
+	        React.createElement(
+	          'span',
+	          null,
+	          'Uh oh. Something bad happened. Try refreshing.'
+	        )
+	      );
+	    } else {
+	      return null;
+	    }
+	  }
+	});
 
 /***/ }
 /******/ ]);

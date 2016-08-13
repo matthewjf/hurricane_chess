@@ -36,7 +36,7 @@ var Rtr = (
   <Router history={BrowserHistory}>
     <Route path='/' component={App}>
       <IndexRoute component={GameIndex} />
-      <Route path='game/:gameId' component={Game} />
+      <Route path='games/:gameId' component={Game} />
     </Route>
   </Router>
 );

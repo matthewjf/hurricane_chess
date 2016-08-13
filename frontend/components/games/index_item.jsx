@@ -12,7 +12,7 @@ module.exports = React.createClass({
 
   handleClick: function(e) {
     e.preventDefault();
-    console.log('clicked on game');
+    BrowserHistory.push('games/' + this.state.game.id);
   },
 
   render: function() {

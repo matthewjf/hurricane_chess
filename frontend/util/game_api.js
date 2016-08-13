@@ -8,7 +8,6 @@ module.exports = {
       data: {game: data},
       success: function(game) {
         successCB(game);
-        GameActions.gameCreated(game);
       },
       error: function(error) {
         errorCB(error);

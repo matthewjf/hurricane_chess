@@ -3,7 +3,8 @@ var React = require('react');
 var GameIndexSubscription = require('../../util/game_index_subscription'),
     GameIndexApi = require('../../util/game_index_api'),
     GameIndexStore = require('../../stores/game_index_store'),
-    CurrentUserState = require("../../mixins/current_user_state");
+    CurrentUserState = require("../../mixins/current_user_state"),
+    Error = require('../shared/error');
 
 var GameIndexItem = require('./index_item'),
     NewGameForm = require('./new_game_form');
@@ -42,22 +43,10 @@ module.exports = React.createClass({
     }
   },
 
-  renderError: function(error) {
-    if (error) {
-      return (
-        <div id='index-error' className="card-panel white-text error-color">
-          <span>Uh oh. Something bad happened. Try refreshing.</span>
-        </div>
-      );
-    } else {
-      return null;
-    }
-  },
-
   render: function() {
     return(
       <div id='game-index'>
-        { this.renderError(this.state.error) }
+        <Error error={this.state.error} />
         <div className='split'>
           <h2>GAMES</h2>
 

@@ -1,9 +1,10 @@
 var React = require('react'),
+    Error = require("../shared/error"),
     GameSubscription = require('../../util/game_subscription');
 
 module.exports = React.createClass({
   getInitialState: function() {
-    return {id: this.props.params.gameId};
+    return {id: this.props.params.gameId, error: null};
   },
 
   componentDidMount: function() {
@@ -15,6 +16,8 @@ module.exports = React.createClass({
   },
 
   render: function() {
-    return null;
+    return (
+      <Error error={this.state.error} />
+    );
   }
 });
