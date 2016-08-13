@@ -1,26 +1,38 @@
+var ErrorUtil = require('../util/error_util');
+
 var GameStore = require('../stores/game_store'),
-    GameIndexActions = require('../actions/game_index_actions');
+    GameActions = require('../actions/game_actions');
 
 module.exports = {
-  subscribe: function() {
+  subscribe: function(gameId) {
     /* global App */
-    App.game = App.cable.subscriptions.create("GamesIndexChannel", {
-      connected: function() {
-        console.log('connected to games index');
+    App.game = App.cable.subscriptions.create(
+      {
+        channel: "GameChannel",
+        game_id: gameId
       },
+      {
+        connected: function() {
+          console.log('connected to game');
+        },
 
-      disconnected: function() {
-      },
+        disconnected: function() {
+          console.log('disconnected from game');
+        },
 
-      received: function(data) {
-        console.log('received');
-        if (data['action'] === 'create')
-          GameIndexActions.receiveGame(data['game']);
+        rejected: function(msg) {
+          console.log('rejected from game');
+          ErrorUtil.gameRejected();
+        },
+
+        received: function(data) {
+          console.log('received');
+        }
       }
-    });
+    );
   },
 
   unsubscribe: function() {
-    App.games_index.unsubscribe();
+    App.game.unsubscribe();
   }
 };

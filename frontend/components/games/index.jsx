@@ -18,13 +18,13 @@ module.exports = React.createClass({
   },
 
   componentDidMount: function() {
-    this.gameListener = GameIndexStore.addListener(this.getGames);
+    this.gameIndexListener = GameIndexStore.addListener(this.getGames);
     GameIndexApi.fetchGames();
     GameIndexSubscription.subscribe();
   },
 
   componentWillUnmount: function() {
-    this.gameListener.remove();
+    this.gameIndexListener.remove();
     GameIndexSubscription.unsubscribe();
   },
 

@@ -58,6 +58,9 @@ GameIndexStore.__onDispatch = function (payload) {
     case GameIndexConstants.GAME_RECEIVED:
       setGame(payload.game);
       break;
+    case GameIndexConstants.GAME_REMOVED:
+      removeGame(payload.game);
+      break;
     case GameIndexConstants.ERROR_RECEIVED:
       setError(payload.error);
       break;

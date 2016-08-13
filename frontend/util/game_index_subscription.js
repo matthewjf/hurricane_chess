@@ -19,9 +19,11 @@ module.exports = {
       },
 
       received: function(data) {
-        console.log('received');
-        if (data['action'] === 'create')
+        console.log('received', data);
+        if (data['action'] === 'create' || data['action'] === 'update')
           GameIndexActions.receiveGame(data['game']);
+        else if (data['action'] === 'destroy')
+          GameIndexActions.removeGame(data['game']);
       }
     });
   },

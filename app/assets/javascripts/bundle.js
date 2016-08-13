@@ -32829,13 +32829,13 @@
 	  },
 	
 	  componentDidMount: function () {
-	    this.gameListener = GameIndexStore.addListener(this.getGames);
+	    this.gameIndexListener = GameIndexStore.addListener(this.getGames);
 	    GameIndexApi.fetchGames();
 	    GameIndexSubscription.subscribe();
 	  },
 	
 	  componentWillUnmount: function () {
-	    this.gameListener.remove();
+	    this.gameIndexListener.remove();
 	    GameIndexSubscription.unsubscribe();
 	  },
 	
@@ -32928,8 +32928,8 @@
 	      },
 	
 	      received: function (data) {
-	        console.log('received');
-	        if (data['action'] === 'create') GameIndexActions.receiveGame(data['game']);
+	        console.log('received', data);
+	        if (data['action'] === 'create' || data['action'] === 'update') GameIndexActions.receiveGame(data['game']);else if (data['action'] === 'destroy') GameIndexActions.removeGame(data['game']);
 	      }
 	    });
 	  },
@@ -33004,6 +33004,9 @@
 	    case GameIndexConstants.GAME_RECEIVED:
 	      setGame(payload.game);
 	      break;
+	    case GameIndexConstants.GAME_REMOVED:
+	      removeGame(payload.game);
+	      break;
 	    case GameIndexConstants.ERROR_RECEIVED:
 	      setError(payload.error);
 	      break;
@@ -33020,6 +33023,7 @@
 	module.exports = {
 	  GAMES_RECEIVED: "GAMES_RECEIVED",
 	  GAME_RECEIVED: 'GAME_RECEIVED',
+	  GAME_REMOVED: "GAME_REMOVED",
 	  ERROR_RECEIVED: "ERROR_RECEIVED"
 	};
 
@@ -33041,6 +33045,13 @@
 	  receiveGame: function (game) {
 	    Dispatcher.dispatch({
 	      actionType: GameIndexConstants.GAME_RECEIVED,
+	      game: game
+	    });
+	  },
+	
+	  removeGame: function (game) {
+	    Dispatcher.dispatch({
+	      actionType: GameIndexConstants.GAME_REMOVED,
 	      game: game
 	    });
 	  },
@@ -33588,10 +33599,23 @@
 /* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var React = __webpack_require__(1);
+	var React = __webpack_require__(1),
+	    GameSubscription = __webpack_require__(271);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
+	
+	  getInitialState: function () {
+	    return { id: this.props.params.gameId };
+	  },
+	
+	  componentDidMount: function () {
+	    GameSubscription.subscribe(this.state.id);
+	  },
+	
+	  componentWillUnmount: function () {
+	    GameSubscription.unsubscribe();
+	  },
 	
 	  render: function () {
 	    return null;
@@ -33607,8 +33631,107 @@
 	module.exports = {
 	  loginRequired: function () {
 	    Materialize.toast('Login required!', 2000, 'error-text');
+	  },
+	  gameRejected: function () {
+	    Materialize.toast('Unable to join game', 2000, 'error-text');
 	  }
 	};
+
+/***/ },
+/* 271 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var ErrorUtil = __webpack_require__(270);
+	
+	var GameStore = __webpack_require__(272),
+	    GameActions = __webpack_require__(268);
+	
+	module.exports = {
+	  subscribe: function (gameId) {
+	    /* global App */
+	    App.game = App.cable.subscriptions.create({
+	      channel: "GameChannel",
+	      game_id: gameId
+	    }, {
+	      connected: function () {
+	        console.log('connected to game');
+	      },
+	
+	      disconnected: function () {
+	        console.log('disconnected from game');
+	      },
+	
+	      rejected: function (msg) {
+	        console.log('rejected from game');
+	        ErrorUtil.gameRejected();
+	      },
+	
+	      received: function (data) {
+	        console.log('received');
+	      }
+	    });
+	  },
+	
+	  unsubscribe: function () {
+	    App.game.unsubscribe();
+	  }
+	};
+
+/***/ },
+/* 272 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Store = __webpack_require__(238).Store,
+	    Dispatcher = __webpack_require__(234),
+	    GameIndexConstants = __webpack_require__(258);
+	
+	var _games = {};
+	
+	var resetGames = function (games) {
+	  _games = {};
+	
+	  games.forEach(function (game) {
+	    _games[game.id] = game;
+	  });
+	};
+	
+	var setGame = function (game) {
+	  _games[game.id] = game;
+	};
+	
+	var removeGame = function (game) {
+	  delete _games[game.id];
+	};
+	
+	var GameIndexStore = new Store(Dispatcher);
+	
+	GameIndexStore.all = function () {
+	  var games = Object.keys(_games).map(function (gameId) {
+	    return _games[gameId];
+	  });
+	
+	  return games.sort(function (g1, g2) {
+	    return new Date(g2.updated_at) - new Date(g1.updated_at);
+	  });
+	};
+	
+	GameIndexStore.find = function (id) {
+	  return _games[id];
+	};
+	
+	GameIndexStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case GameIndexConstants.GAMES_RECEIVED:
+	      resetGames(payload.games);
+	      break;
+	    case GameIndexConstants.GAME_RECEIVED:
+	      setGame(payload.game);
+	      break;
+	  }
+	  this.__emitChange();
+	};
+	
+	module.exports = GameIndexStore;
 
 /***/ }
 /******/ ]);

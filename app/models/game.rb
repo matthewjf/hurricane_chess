@@ -12,8 +12,12 @@ class Game < ApplicationRecord
     source: :user
 
   scope :index, -> {
-    where(status: :pending).where(private: false).order(created_at: :desc)
+    pending.where(private: false).order(created_at: :desc)
   }
+
+  def should_be_removed?
+    players.count == 0 && pending?
+  end
 
   # player assignment
   def white
@@ -24,6 +28,7 @@ class Game < ApplicationRecord
   def white=(user)
     user_game = UserGame.new(color: :white)
     user_game.user = user
+    user_game.game = self
     self.user_games << user_game
   end
 
@@ -35,11 +40,16 @@ class Game < ApplicationRecord
   def black=(user)
     user_game = UserGame.new(color: :black)
     user_game.user = user
+    user_game.game = self
     self.user_games << user_game
   end
 
   def join(user)
     self.white ? self.black=(user) : self.white=(user)
+  end
+
+  def remove_player(user)
+    user_games.where(user_id: user.id).destroy_all
   end
 
   # broadcasting
@@ -50,7 +60,8 @@ class Game < ApplicationRecord
   end
 
   def broadcast_job(action)
-    GameIndexBroadcastJob.perform_later data(action)
+    # GameIndexBroadcastJob.perform_later data(action)
+    ActionCable.server.broadcast 'game_index_channel', data(action)
   end
 
   def data(action)

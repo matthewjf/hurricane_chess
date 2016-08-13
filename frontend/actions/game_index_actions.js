@@ -16,6 +16,13 @@ module.exports = {
     });
   },
 
+  removeGame: function(game) {
+    Dispatcher.dispatch({
+      actionType: GameIndexConstants.GAME_REMOVED,
+      game: game
+    });
+  },
+
   handleError: function(error) {
     Dispatcher.dispatch({
       actionType: GameIndexConstants.ERROR_RECEIVED,
