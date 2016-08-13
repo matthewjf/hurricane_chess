@@ -12,6 +12,7 @@
 
 ### Channels
 - Want to move to websockets only. Right now, the initial request is handled by http, and then a channel subscription is opened. Would prefer a tree structure for websocket streams.
+- Ideally, the channel connection should be a replacement for http requests
 
 ### Gameplay
 - Don't hit the DB until after game is complete
@@ -46,6 +47,12 @@
 
 ### Routing
 - Handle browser history
+
+### Users
+- Add user rankings and stats
+- Add user page
+- Add matchmaking
+- Add email
 
 ## Contributing
 
