@@ -21,14 +21,16 @@ class Game < ApplicationRecord
     players.count == 0 && pending?
   end
 
+  def should_activate?
+    pending? && white.present? && black.present?
+  end
+
   def update_state!
     destroy! if should_be_removed?
 
     if pending? && white && black
       # this don't work right, some async shit
-      sleep 10
-      reload
-      active! if pending? && white && black
+      ActivateGameJob.set(wait: 10.seconds).perform_later(self.id)
     end
   end
 
@@ -75,8 +77,7 @@ class Game < ApplicationRecord
   end
 
   def broadcast_job(action)
-    # GameIndexBroadcastJob.perform_later data(action)
-    ActionCable.server.broadcast 'game_index_channel', data(action)
+    GameIndexBroadcastJob.perform_now data(action)
   end
 
   def data(action)
