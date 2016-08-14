@@ -3,6 +3,8 @@ class ActivateGameJob < ApplicationJob
 
   def perform(game_id)
     @game = Game.find(game_id)
-    @game.active! if @game.should_activate?
+    if @game.should_activate?
+      @game.active!
+    end
   end
 end

@@ -8,13 +8,13 @@ class GameChannel < ApplicationCable::Channel
   end
 
   def unsubscribed
-    if @game.pending?
-      @game.remove_player!(current_user)
-    end
+    @game.reload
+    @game.remove_player!(current_user)
   end
 
   protected
   def join_current_user
+    @game.reload
     return false unless current_user
     @game.join!(current_user)
   end
