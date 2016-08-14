@@ -19,6 +19,7 @@ module.exports = {
       },
 
       received: function(data) {
+        console.log(data);
         if (data['action'] === 'create' || data['action'] === 'update')
           GameIndexActions.receiveGame(data['game']);
         else if (data['action'] === 'destroy')

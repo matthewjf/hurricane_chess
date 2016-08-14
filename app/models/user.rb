@@ -4,14 +4,11 @@ class User < ApplicationRecord
 
   attr_reader :password
 
-  has_many :user_games,
-    foreign_key: :user_id
-
-  has_many :games,
-    through: :user_games,
-    source: :game
-
   after_initialize :ensure_session_token
+
+  def games
+    Games.where("white_id = ? OR black_id = ?", self.id, self.id)
+  end
 
   def self.find_by_credentials(username, password)
     user = User.find_by(username: username)

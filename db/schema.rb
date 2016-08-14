@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160808072943) do
+ActiveRecord::Schema.define(version: 20160814060833) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,14 +22,10 @@ ActiveRecord::Schema.define(version: 20160808072943) do
     t.string   "name"
     t.string   "password_digest"
     t.integer  "status",          default: 0,     null: false
-  end
-
-  create_table "user_games", force: :cascade do |t|
-    t.integer "user_id", null: false
-    t.integer "game_id", null: false
-    t.string  "color",   null: false
-    t.index ["game_id"], name: "index_user_games_on_game_id", using: :btree
-    t.index ["user_id"], name: "index_user_games_on_user_id", using: :btree
+    t.integer  "white_id"
+    t.integer  "black_id"
+    t.index ["black_id"], name: "index_games_on_black_id", using: :btree
+    t.index ["white_id"], name: "index_games_on_white_id", using: :btree
   end
 
   create_table "users", force: :cascade do |t|
