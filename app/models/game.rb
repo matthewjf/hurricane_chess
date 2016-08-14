@@ -49,6 +49,7 @@ class Game < ApplicationRecord
   end
 
   def remove_player(user)
+    return unless user
     self.white_id = nil if self.white_id == user.id
     self.black_id = nil if self.black_id == user.id
   end

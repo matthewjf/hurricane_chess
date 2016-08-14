@@ -16,8 +16,7 @@ class GameChannel < ApplicationCable::Channel
   protected
   def join_current_user
     return false unless current_user
-    @game.join(current_user)
-    @game.save
+    @game.join!(current_user)
   end
 
 end
