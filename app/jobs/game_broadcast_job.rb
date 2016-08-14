@@ -1,7 +1,7 @@
 class GameBroadcastJob < ApplicationJob
   queue_as :default
 
-  def perform(data)
-    ActionCable.server.broadcast("game_channel_#{data[:game].id}", data)
+  def perform(game, data)
+    GameChannel.broadcast_to(game, data)
   end
 end

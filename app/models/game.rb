@@ -90,7 +90,7 @@ class Game < ApplicationRecord
 
   def broadcast_job(action)
     GameIndexBroadcastJob.perform_now data(action)
-    # send broadcast to game channel
+    GameBroadcastJob.perform_now self, data(action)
   end
 
   def data(action)

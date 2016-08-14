@@ -32,7 +32,7 @@ module.exports = {
         },
 
         received: function(data) {
-          console.log('received');
+          console.log('received', data);
         }
       }
     );
