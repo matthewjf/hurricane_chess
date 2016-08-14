@@ -14,7 +14,6 @@ class GameChannel < ApplicationCable::Channel
 
   protected
   def join_current_user
-    @game.reload
     return false unless current_user
     @game.join!(current_user)
   end
