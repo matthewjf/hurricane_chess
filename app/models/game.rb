@@ -97,6 +97,8 @@ class Game < ApplicationRecord
     {action: action, game: self}
   end
 
-  # validations
-
+  # serializer
+  def as_json(opts=nil)
+    GameSerializer.new(self).as_json
+  end
 end

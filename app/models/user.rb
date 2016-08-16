@@ -32,6 +32,11 @@ class User < ApplicationRecord
     self.session_token
   end
 
+  # serializer
+  def as_json(opts=nil)
+    UserSerializer.new(self).as_json
+  end
+
   private
   def ensure_session_token
     self.session_token ||= SecureRandom.urlsafe_base64(16)
