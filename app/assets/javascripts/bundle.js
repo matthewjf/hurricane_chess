@@ -53,12 +53,12 @@
 	    BrowserHistory = __webpack_require__(168).browserHistory;
 	
 	var Header = __webpack_require__(229),
-	    LoginForm = __webpack_require__(264),
-	    SignupForm = __webpack_require__(265),
-	    GameIndex = __webpack_require__(255),
-	    Game = __webpack_require__(269);
+	    LoginForm = __webpack_require__(256),
+	    SignupForm = __webpack_require__(257),
+	    GameIndex = __webpack_require__(258),
+	    Game = __webpack_require__(272);
 	
-	var CurrentUserState = __webpack_require__(261);
+	var CurrentUserState = __webpack_require__(264);
 	
 	var App = React.createClass({
 	  displayName: 'App',
@@ -25744,8 +25744,8 @@
 	
 	var UserApi = __webpack_require__(230);
 	
-	var LoginForm = __webpack_require__(264),
-	    SignupForm = __webpack_require__(265);
+	var LoginForm = __webpack_require__(256),
+	    SignupForm = __webpack_require__(257);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -25861,7 +25861,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var UserActions = __webpack_require__(231);
-	var Connection = __webpack_require__(274);
+	var Connection = __webpack_require__(255);
 	
 	module.exports = {
 		signup: function (user, successCB, errorCB) {
@@ -32810,18 +32810,238 @@
 
 /***/ },
 /* 255 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  reset: function () {
+	    /* global App */
+	    window.App.cable.disconnect();
+	    window.App.cable.connect();
+	  }
+	};
+
+/***/ },
+/* 256 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* global Materialize */
+	
+	var React = __webpack_require__(1);
+	var UserApi = __webpack_require__(230);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  getInitialState: function () {
+	    return { username: '', password: '' };
+	  },
+	
+	  setUsername: function (e) {
+	    this.setState({ username: e.currentTarget.value });
+	  },
+	
+	  setPassword: function (e) {
+	    this.setState({ password: e.currentTarget.value });
+	  },
+	
+	  resetState: function () {
+	    this.setState({ username: '', password: '' });
+	  },
+	
+	  handleSubmit: function (e) {
+	    e.preventDefault();
+	    UserApi.login(this.state, this.success);
+	  },
+	
+	  success: function (data) {
+	    this.resetState();
+	    $('#login-modal').closeModal();
+	    Materialize.toast('Welcome back, ' + data.username + '!', 2000, 'success-text');
+	  },
+	
+	  render: function () {
+	    if (this.state.currentUser) {
+	      return null;
+	    } else {
+	      return React.createElement(
+	        'div',
+	        { id: 'login-modal', className: 'modal' },
+	        React.createElement(
+	          'div',
+	          { className: 'row' },
+	          React.createElement(
+	            'form',
+	            { onSubmit: this.handleSubmit },
+	            React.createElement(
+	              'div',
+	              { className: 'modal-content' },
+	              React.createElement(
+	                'div',
+	                { className: 'row' },
+	                React.createElement(
+	                  'div',
+	                  { className: 'input-field' },
+	                  React.createElement('input', { id: 'login[username]',
+	                    type: 'text',
+	                    value: this.state.username,
+	                    onChange: this.setUsername }),
+	                  React.createElement(
+	                    'label',
+	                    { htmlFor: 'login[username]' },
+	                    'Username'
+	                  )
+	                )
+	              ),
+	              React.createElement(
+	                'div',
+	                { className: 'row' },
+	                React.createElement(
+	                  'div',
+	                  { className: 'input-field' },
+	                  React.createElement('input', { id: 'login[password]',
+	                    type: 'password',
+	                    value: this.state.password,
+	                    onChange: this.setPassword }),
+	                  React.createElement(
+	                    'label',
+	                    { htmlFor: 'login[password]' },
+	                    'Password'
+	                  )
+	                )
+	              )
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'modal-footer' },
+	              React.createElement('input', { type: 'submit',
+	                value: 'login',
+	                className: 'waves-effect waves-light btn' })
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }
+	});
+
+/***/ },
+/* 257 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* global Materialize */
+	
+	var React = __webpack_require__(1);
+	var UserApi = __webpack_require__(230);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  getInitialState: function () {
+	    return { username: '', password: '' };
+	  },
+	
+	  setUsername: function (e) {
+	    this.setState({ username: e.currentTarget.value });
+	  },
+	
+	  setPassword: function (e) {
+	    this.setState({ password: e.currentTarget.value });
+	  },
+	
+	  resetState: function () {
+	    this.setState({ username: '', password: '' });
+	  },
+	
+	  handleSubmit: function (e) {
+	    e.preventDefault();
+	    UserApi.signup(this.state, this.success);
+	  },
+	
+	  success: function (data) {
+	    this.resetState();
+	    $('#signup-modal').closeModal();
+	    Materialize.toast('Welcome, ' + data.username + '!', 2000, 'success-text');
+	  },
+	
+	  render: function () {
+	    if (this.state.currentUser) {
+	      return null;
+	    } else {
+	      return React.createElement(
+	        'div',
+	        { id: 'signup-modal', className: 'modal' },
+	        React.createElement(
+	          'div',
+	          { className: 'row' },
+	          React.createElement(
+	            'form',
+	            { onSubmit: this.handleSubmit },
+	            React.createElement(
+	              'div',
+	              { className: 'modal-content' },
+	              React.createElement(
+	                'div',
+	                { className: 'row' },
+	                React.createElement(
+	                  'div',
+	                  { className: 'input-field' },
+	                  React.createElement('input', { id: 'signup[username]',
+	                    type: 'text',
+	                    value: this.state.username,
+	                    onChange: this.setUsername }),
+	                  React.createElement(
+	                    'label',
+	                    { htmlFor: 'signup[username]' },
+	                    'Username'
+	                  )
+	                )
+	              ),
+	              React.createElement(
+	                'div',
+	                { className: 'row' },
+	                React.createElement(
+	                  'div',
+	                  { className: 'input-field' },
+	                  React.createElement('input', { id: 'signup[password]',
+	                    type: 'password',
+	                    value: this.state.password,
+	                    onChange: this.setPassword }),
+	                  React.createElement(
+	                    'label',
+	                    { htmlFor: 'signup[password]' },
+	                    'Password'
+	                  )
+	                )
+	              )
+	            ),
+	            React.createElement(
+	              'div',
+	              { className: 'modal-footer' },
+	              React.createElement('input', { type: 'submit',
+	                value: 'sign up',
+	                className: 'waves-effect waves-light btn' })
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }
+	});
+
+/***/ },
+/* 258 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1);
 	
-	var GameIndexSubscription = __webpack_require__(256),
-	    GameIndexApi = __webpack_require__(260),
-	    GameIndexStore = __webpack_require__(257),
-	    CurrentUserState = __webpack_require__(261),
-	    Error = __webpack_require__(273);
+	var GameIndexSubscription = __webpack_require__(259),
+	    GameIndexApi = __webpack_require__(263),
+	    GameIndexStore = __webpack_require__(260),
+	    CurrentUserState = __webpack_require__(264),
+	    Error = __webpack_require__(265);
 	
-	var GameIndexItem = __webpack_require__(262),
-	    NewGameForm = __webpack_require__(263);
+	var GameIndexItem = __webpack_require__(266),
+	    NewGameForm = __webpack_require__(267);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -32894,11 +33114,11 @@
 	});
 
 /***/ },
-/* 256 */
+/* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var GameIndexStore = __webpack_require__(257),
-	    GameIndexActions = __webpack_require__(259);
+	var GameIndexStore = __webpack_require__(260),
+	    GameIndexActions = __webpack_require__(262);
 	
 	module.exports = {
 	  subscribe: function () {
@@ -32933,12 +33153,12 @@
 	};
 
 /***/ },
-/* 257 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Store = __webpack_require__(238).Store,
 	    Dispatcher = __webpack_require__(234),
-	    GameIndexConstants = __webpack_require__(258);
+	    GameIndexConstants = __webpack_require__(261);
 	
 	var _games = {};
 	var _error = null;
@@ -33009,7 +33229,7 @@
 	module.exports = GameIndexStore;
 
 /***/ },
-/* 258 */
+/* 261 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -33020,11 +33240,11 @@
 	};
 
 /***/ },
-/* 259 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Dispatcher = __webpack_require__(234),
-	    GameIndexConstants = __webpack_require__(258);
+	    GameIndexConstants = __webpack_require__(261);
 	
 	module.exports = {
 	  receiveGames: function (games) {
@@ -33057,10 +33277,10 @@
 	};
 
 /***/ },
-/* 260 */
+/* 263 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var GameIndexActions = __webpack_require__(259);
+	var GameIndexActions = __webpack_require__(262);
 	
 	module.exports = {
 	  fetchGames: function () {
@@ -33073,7 +33293,7 @@
 	};
 
 /***/ },
-/* 261 */
+/* 264 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var UserStore = __webpack_require__(233);
@@ -33108,7 +33328,41 @@
 	};
 
 /***/ },
-/* 262 */
+/* 265 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  getInitialState: function () {
+	    return { error: this.props.error };
+	  },
+	
+	  componentWillReceiveProps: function (props) {
+	    this.setState({ error: props.error });
+	  },
+	
+	  render: function () {
+	    if (this.state.error) {
+	      return React.createElement(
+	        'div',
+	        { id: 'index-error', className: 'card-panel white-text error-color' },
+	        React.createElement(
+	          'span',
+	          null,
+	          'Uh oh. Bad things happened.'
+	        )
+	      );
+	    } else {
+	      return null;
+	    }
+	  }
+	});
+
+/***/ },
+/* 266 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1),
@@ -33170,13 +33424,13 @@
 	});
 
 /***/ },
-/* 263 */
+/* 267 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1),
 	    BrowserHistory = __webpack_require__(168).browserHistory,
-	    GameApi = __webpack_require__(267),
-	    ErrorUtil = __webpack_require__(270);
+	    GameApi = __webpack_require__(268),
+	    ErrorUtil = __webpack_require__(271);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -33343,227 +33597,10 @@
 	});
 
 /***/ },
-/* 264 */
+/* 268 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* global Materialize */
-	
-	var React = __webpack_require__(1);
-	var UserApi = __webpack_require__(230);
-	
-	module.exports = React.createClass({
-	  displayName: 'exports',
-	
-	  getInitialState: function () {
-	    return { username: '', password: '' };
-	  },
-	
-	  setUsername: function (e) {
-	    this.setState({ username: e.currentTarget.value });
-	  },
-	
-	  setPassword: function (e) {
-	    this.setState({ password: e.currentTarget.value });
-	  },
-	
-	  resetState: function () {
-	    this.setState({ username: '', password: '' });
-	  },
-	
-	  handleSubmit: function (e) {
-	    e.preventDefault();
-	    UserApi.login(this.state, this.success);
-	  },
-	
-	  success: function (data) {
-	    this.resetState();
-	    $('#login-modal').closeModal();
-	    Materialize.toast('Welcome back, ' + data.username + '!', 2000, 'success-text');
-	  },
-	
-	  render: function () {
-	    if (this.state.currentUser) {
-	      return null;
-	    } else {
-	      return React.createElement(
-	        'div',
-	        { id: 'login-modal', className: 'modal' },
-	        React.createElement(
-	          'div',
-	          { className: 'row' },
-	          React.createElement(
-	            'form',
-	            { onSubmit: this.handleSubmit },
-	            React.createElement(
-	              'div',
-	              { className: 'modal-content' },
-	              React.createElement(
-	                'div',
-	                { className: 'row' },
-	                React.createElement(
-	                  'div',
-	                  { className: 'input-field' },
-	                  React.createElement('input', { id: 'login[username]',
-	                    type: 'text',
-	                    value: this.state.username,
-	                    onChange: this.setUsername }),
-	                  React.createElement(
-	                    'label',
-	                    { htmlFor: 'login[username]' },
-	                    'Username'
-	                  )
-	                )
-	              ),
-	              React.createElement(
-	                'div',
-	                { className: 'row' },
-	                React.createElement(
-	                  'div',
-	                  { className: 'input-field' },
-	                  React.createElement('input', { id: 'login[password]',
-	                    type: 'password',
-	                    value: this.state.password,
-	                    onChange: this.setPassword }),
-	                  React.createElement(
-	                    'label',
-	                    { htmlFor: 'login[password]' },
-	                    'Password'
-	                  )
-	                )
-	              )
-	            ),
-	            React.createElement(
-	              'div',
-	              { className: 'modal-footer' },
-	              React.createElement('input', { type: 'submit',
-	                value: 'login',
-	                className: 'waves-effect waves-light btn' })
-	            )
-	          )
-	        )
-	      );
-	    }
-	  }
-	});
-
-/***/ },
-/* 265 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* global Materialize */
-	
-	var React = __webpack_require__(1);
-	var UserApi = __webpack_require__(230);
-	
-	module.exports = React.createClass({
-	  displayName: 'exports',
-	
-	  getInitialState: function () {
-	    return { username: '', password: '' };
-	  },
-	
-	  setUsername: function (e) {
-	    this.setState({ username: e.currentTarget.value });
-	  },
-	
-	  setPassword: function (e) {
-	    this.setState({ password: e.currentTarget.value });
-	  },
-	
-	  resetState: function () {
-	    this.setState({ username: '', password: '' });
-	  },
-	
-	  handleSubmit: function (e) {
-	    e.preventDefault();
-	    UserApi.signup(this.state, this.success);
-	  },
-	
-	  success: function (data) {
-	    this.resetState();
-	    $('#signup-modal').closeModal();
-	    Materialize.toast('Welcome, ' + data.username + '!', 2000, 'success-text');
-	  },
-	
-	  render: function () {
-	    if (this.state.currentUser) {
-	      return null;
-	    } else {
-	      return React.createElement(
-	        'div',
-	        { id: 'signup-modal', className: 'modal' },
-	        React.createElement(
-	          'div',
-	          { className: 'row' },
-	          React.createElement(
-	            'form',
-	            { onSubmit: this.handleSubmit },
-	            React.createElement(
-	              'div',
-	              { className: 'modal-content' },
-	              React.createElement(
-	                'div',
-	                { className: 'row' },
-	                React.createElement(
-	                  'div',
-	                  { className: 'input-field' },
-	                  React.createElement('input', { id: 'signup[username]',
-	                    type: 'text',
-	                    value: this.state.username,
-	                    onChange: this.setUsername }),
-	                  React.createElement(
-	                    'label',
-	                    { htmlFor: 'signup[username]' },
-	                    'Username'
-	                  )
-	                )
-	              ),
-	              React.createElement(
-	                'div',
-	                { className: 'row' },
-	                React.createElement(
-	                  'div',
-	                  { className: 'input-field' },
-	                  React.createElement('input', { id: 'signup[password]',
-	                    type: 'password',
-	                    value: this.state.password,
-	                    onChange: this.setPassword }),
-	                  React.createElement(
-	                    'label',
-	                    { htmlFor: 'signup[password]' },
-	                    'Password'
-	                  )
-	                )
-	              )
-	            ),
-	            React.createElement(
-	              'div',
-	              { className: 'modal-footer' },
-	              React.createElement('input', { type: 'submit',
-	                value: 'sign up',
-	                className: 'waves-effect waves-light btn' })
-	            )
-	          )
-	        )
-	      );
-	    }
-	  }
-	});
-
-/***/ },
-/* 266 */
-/***/ function(module, exports) {
-
-	module.exports = {
-	  GAME_JOINED: "GAME_JOINED",
-	  ERROR_RECEIVED: "ERROR_RECEIVED"
-	};
-
-/***/ },
-/* 267 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var GameActions = __webpack_require__(268);
+	var GameActions = __webpack_require__(269);
 	
 	module.exports = {
 	  createGame: function (data, successCB, errorCB) {
@@ -33582,11 +33619,11 @@
 	};
 
 /***/ },
-/* 268 */
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Dispatcher = __webpack_require__(234),
-	    GameConstants = __webpack_require__(266);
+	    GameConstants = __webpack_require__(270);
 	
 	module.exports = {
 	  gameJoined: function (gameId) {
@@ -33605,15 +33642,39 @@
 	};
 
 /***/ },
-/* 269 */
+/* 270 */
+/***/ function(module, exports) {
+
+	module.exports = {
+	  GAME_JOINED: "GAME_JOINED",
+	  ERROR_RECEIVED: "ERROR_RECEIVED"
+	};
+
+/***/ },
+/* 271 */
+/***/ function(module, exports) {
+
+	/* global Materialize */
+	
+	module.exports = {
+	  loginRequired: function () {
+	    Materialize.toast('Login required!', 2000, 'error-text');
+	  },
+	  gameRejected: function (currentUser) {
+	    Materialize.toast('Unable to join game', 2000, 'error-text');
+	  }
+	};
+
+/***/ },
+/* 272 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(1),
-	    Error = __webpack_require__(273),
-	    ErrorUtil = __webpack_require__(270),
-	    CurrentUserState = __webpack_require__(261),
-	    GameSubscription = __webpack_require__(271),
-	    GameStore = __webpack_require__(272);
+	    Error = __webpack_require__(265),
+	    ErrorUtil = __webpack_require__(271),
+	    CurrentUserState = __webpack_require__(264),
+	    GameSubscription = __webpack_require__(273),
+	    GameStore = __webpack_require__(274);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -33649,29 +33710,14 @@
 	});
 
 /***/ },
-/* 270 */
-/***/ function(module, exports) {
-
-	/* global Materialize */
-	
-	module.exports = {
-	  loginRequired: function () {
-	    Materialize.toast('Login required!', 2000, 'error-text');
-	  },
-	  gameRejected: function (currentUser) {
-	    Materialize.toast('Unable to join game', 2000, 'error-text');
-	  }
-	};
-
-/***/ },
-/* 271 */
+/* 273 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ErrorUtil = __webpack_require__(270),
+	var ErrorUtil = __webpack_require__(271),
 	    BrowserHistory = __webpack_require__(168).browserHistory;
 	
-	var GameStore = __webpack_require__(272),
-	    GameActions = __webpack_require__(268);
+	var GameStore = __webpack_require__(274),
+	    GameActions = __webpack_require__(269);
 	
 	module.exports = {
 	  subscribe: function (gameId, rejectCB) {
@@ -33710,12 +33756,12 @@
 	};
 
 /***/ },
-/* 272 */
+/* 274 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Store = __webpack_require__(238).Store,
 	    Dispatcher = __webpack_require__(234),
-	    GameConstants = __webpack_require__(258);
+	    GameConstants = __webpack_require__(261);
 	
 	var _gameId = {};
 	var _error = null;
@@ -33755,52 +33801,6 @@
 	};
 	
 	module.exports = GameStore;
-
-/***/ },
-/* 273 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(1);
-	
-	module.exports = React.createClass({
-	  displayName: 'exports',
-	
-	  getInitialState: function () {
-	    return { error: this.props.error };
-	  },
-	
-	  componentWillReceiveProps: function (props) {
-	    this.setState({ error: props.error });
-	  },
-	
-	  render: function () {
-	    if (this.state.error) {
-	      return React.createElement(
-	        'div',
-	        { id: 'index-error', className: 'card-panel white-text error-color' },
-	        React.createElement(
-	          'span',
-	          null,
-	          'Uh oh. Bad things happened.'
-	        )
-	      );
-	    } else {
-	      return null;
-	    }
-	  }
-	});
-
-/***/ },
-/* 274 */
-/***/ function(module, exports) {
-
-	module.exports = {
-	  reset: function () {
-	    /* global App */
-	    window.App.cable.disconnect();
-	    window.App.cable.connect();
-	  }
-	};
 
 /***/ }
 /******/ ]);

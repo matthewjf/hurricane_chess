@@ -16,7 +16,7 @@ class Game < ApplicationRecord
     optional: :true
 
   scope :index, -> {
-    pending.where(private: false).order(created_at: :desc)
+    where.not(status: :archived).where(private: false).order(created_at: :desc)
   }
 
   # helpers
